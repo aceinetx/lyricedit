@@ -16,7 +16,8 @@ void LyricEdit::drawImGui() {
   ImGui::SetNextWindowSize({defaultWindowWidth, 0});
   ImGui::SetNextWindowPos({0, 0});
   ImGui::Begin("File", nullptr, defaultWindowFlags);
-  ImGui::Button("Open .mp3");
+  if (ImGui::Button("Open .mp3")) {
+  }
   ImGui::Button("Open .lrc");
   prevWindowHeight = ImGui::GetWindowHeight();
   ImGui::End();

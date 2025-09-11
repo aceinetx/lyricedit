@@ -14,6 +14,8 @@ public:
 
   static LyricEdit& getInstance();
 
+  void openMusicDialog();
+
   void run();
 };
 } // namespace lc
