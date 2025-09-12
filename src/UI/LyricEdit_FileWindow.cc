@@ -9,7 +9,9 @@ void LyricEdit::drawFileWindowContent() {
     openMusicDialog();
   }
   ImGui::SameLine();
-  ImGui::Button("Open .lrc");
+  if (ImGui::Button("Open .lrc")) {
+    openLRCDialog();
+  }
 
   ImGui::SeparatorText("Save");
   if (ImGui::Button("Save .lrc")) {

@@ -1,21 +1,42 @@
 #include "tinyfd_cpp.hh"
 #include "tinyfiledialogs.h"
 
-std::string tinyfd::openFileDialog(std::string title, std::string defaultPathAndFile,
-                                   std::vector<std::string> fillerPatterns,
+std::string tinyfd::openFileDialog(std::string title, std::string defaultPathAndOrFile,
+                                   std::vector<std::string> filterPatterns,
                                    std::string singleFilterDescription) {
   char const* const aTitle = title.c_str();
-  char const* const aDefaultPathAndFile = defaultPathAndFile.c_str();
-  int const aNumOfFilterPatterns = fillerPatterns.size();
+  char const* const aDefaultPathAndOrFile = defaultPathAndOrFile.c_str();
+  int const aNumOfFilterPatterns = filterPatterns.size();
   char** aFilterPatterns = nullptr;
-  if (!fillerPatterns.empty()) {
-    aFilterPatterns = new char*[fillerPatterns.size()];
-    for (size_t i = 0; i < fillerPatterns.size(); i++) {
-      aFilterPatterns[i] = const_cast<char*>(fillerPatterns[i].c_str());
+  if (!filterPatterns.empty()) {
+    aFilterPatterns = new char*[filterPatterns.size()];
+    for (size_t i = 0; i < filterPatterns.size(); i++) {
+      aFilterPatterns[i] = const_cast<char*>(filterPatterns[i].c_str());
     }
   }
-  std::string result = tinyfd_openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns,
+  std::string result = tinyfd_openFileDialog(aTitle, aDefaultPathAndOrFile, aNumOfFilterPatterns,
                                              aFilterPatterns, singleFilterDescription.c_str(), 0);
+  if (aFilterPatterns)
+    delete[] aFilterPatterns;
+  return result;
+}
+std::string tinyfd::saveFileDialog(std::string title, std::string defaultPathAndOrFile,
+                                   std::vector<std::string> filterPatterns,
+                                   std::string singleFilterDescription) {
+  const char* aTitle = title.c_str();
+  const char* aDefaultPathAndOrFile = defaultPathAndOrFile.c_str();
+  int aNumOfFilterPatterns = filterPatterns.size();
+  char** aFilterPatterns = nullptr;
+  if (!filterPatterns.empty()) {
+    aFilterPatterns = new char*[filterPatterns.size()];
+    for (size_t i = 0; i < filterPatterns.size(); i++) {
+      aFilterPatterns[i] = const_cast<char*>(filterPatterns[i].c_str());
+    }
+  }
+  const char* aSingleFilterDescription = singleFilterDescription.c_str();
+
+  std::string result = tinyfd_saveFileDialog(aTitle, aDefaultPathAndOrFile, aNumOfFilterPatterns,
+                                             aFilterPatterns, aSingleFilterDescription);
   if (aFilterPatterns)
     delete[] aFilterPatterns;
   return result;

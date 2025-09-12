@@ -27,6 +27,7 @@ public:
 
   void openMusicDialog();
   void saveLRCDialog();
+  void openLRCDialog();
 
   void loadMusic(std::string path);
   void playMusic();
