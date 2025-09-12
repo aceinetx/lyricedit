@@ -1,6 +1,9 @@
-#include "lyricedit.hh"
+#include "LyricEdit.hh"
 
-int main() {
+int main(int argc, char** argv) {
   auto& lyricedit = lc::LyricEdit::getInstance();
-  lyricedit.run();
+  if (argc > 1)
+    lyricedit.run(argv[1]);
+  else
+    lyricedit.run();
 }

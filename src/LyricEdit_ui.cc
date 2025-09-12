@@ -1,4 +1,5 @@
-#include "lyricedit.hh"
+#include "LyricEdit.hh"
+#include "Util.hh"
 #include <imgui.h>
 #include <raylib.h>
 
@@ -27,15 +28,25 @@ void LyricEdit::drawImGui() {
   ImGui::SetNextWindowPos({0, prevWindowHeight});
   ImGui::Begin("Song controls", nullptr, defaultWindowFlags);
 
-  ImGui::Text("00:00.00");
+  if (!music.path.empty()) {
+    ImGui::Text("%s", music.getTimeFormatted().c_str());
 
-  ImGui::Button("Play");
-  ImGui::SameLine();
-  ImGui::Button("Stop");
+    if (ImGui::Button("Play"))
+      playMusic();
+    ImGui::SameLine();
+    if (ImGui::Button("Stop"))
+      stopMusic();
 
-  ImGui::Button("Pause");
-  ImGui::SameLine();
-  ImGui::Button("Resume");
+    if (ImGui::Button("Pause/Resume")) {
+      if (IsMusicStreamPlaying(music.raylibResource))
+        pauseMusic();
+      else
+        resumeMusic();
+    }
+    ImGui::SameLine();
+  } else {
+    ImGui::Text("Load a song first");
+  }
 
   ImGui::End();
 }
