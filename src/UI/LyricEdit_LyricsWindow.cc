@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <imgui.h>
+#include <imgui_stdlib.h>
 
 #define LC_UNIQUE(title) (LC_FORMAT_C("{}##{}", title, lyric.getUID()))
 #define LC_UNIQUE_EX(title, id) (LC_FORMAT_C("{}##{}{}", title, lyric.getUID(), id))
@@ -12,7 +13,6 @@ using namespace lc;
 void LyricEdit::drawLyricsWindowContent() {
   static auto& io = ImGui::GetIO();
   static size_t editingLyricIndex = -1;
-  static char editingLyricText[2048];
   auto& lyrics = lrc.lyrics;
 
   bool sortLyrics = false;
@@ -49,9 +49,7 @@ void LyricEdit::drawLyricsWindowContent() {
       // Pop color
       ImGui::PopStyleColor();
     } else {
-      if (ImGui::InputText(LC_UNIQUE_EX("", "text"), editingLyricText, sizeof editingLyricText)) {
-        lyric.text = editingLyricText;
-      }
+      ImGui::InputText(LC_UNIQUE_EX("", "text"), &lyric.text);
     }
 
     // Pop styling
@@ -88,13 +86,7 @@ void LyricEdit::drawLyricsWindowContent() {
     ImGui::SetCursorPosY(controlCursorPosY);
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 300);
     if (ImGui::Button(LC_UNIQUE("Edit"))) {
-      if (isEditing)
-        editingLyricIndex = -1;
-      else {
-        std::memset(editingLyricText, 0, sizeof editingLyricText);
-        std::strncpy(editingLyricText, lyric.text.c_str(), sizeof editingLyricText - 1);
-        editingLyricIndex = i;
-      }
+      editingLyricIndex = !isEditing ? i : -1;
     }
 
     ImGui::Spacing();
