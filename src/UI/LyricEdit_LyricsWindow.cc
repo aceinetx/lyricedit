@@ -4,8 +4,8 @@
 #include <cstring>
 #include <imgui.h>
 
-#define LC_UNIQUE(title) (LC_FORMAT_C("{}##{}", title, lyric.getHash()))
-#define LC_UNIQUE_EX(title, id) (LC_FORMAT_C("{}##{}{}", title, lyric.getHash(), id))
+#define LC_UNIQUE(title) (LC_FORMAT_C("{}##{}", title, lyric.getUID()))
+#define LC_UNIQUE_EX(title, id) (LC_FORMAT_C("{}##{}{}", title, lyric.getUID(), id))
 
 using namespace lc;
 
@@ -20,8 +20,7 @@ void LyricEdit::drawLyricsWindowContent() {
   if (ImGui::Button("Add line at current time")) {
     LyricLine line;
     line.time = GetMusicTimePlayed(music.raylibResource);
-    line.text = "(New lyric line, edit this)";
-    line.updateHash();
+    line.text = LC_FORMAT("Lyric {}", lyrics.size() + 1);
     lyrics.push_back(line);
     sortLyricsArray();
   }
@@ -29,9 +28,9 @@ void LyricEdit::drawLyricsWindowContent() {
   ImGui::Separator();
 
   // Find current lyric time
-  size_t currentLyricIndex = 0;
+  size_t currentLyricIndex = -1;
   if (!lyrics.empty())
-    for (size_t i = lyrics.size() - 1; i > 0; i--) {
+    for (int i = lyrics.size() - 1; i >= 0; --i) {
       if (musicTimePlayed >= lyrics[i].time) {
         currentLyricIndex = i;
         break;
@@ -61,7 +60,6 @@ void LyricEdit::drawLyricsWindowContent() {
     } else {
       if (ImGui::InputText(LC_UNIQUE_EX("", "text"), editingLyricText, sizeof editingLyricText)) {
         lyric.text = editingLyricText;
-        lyric.updateHash();
       }
     }
 

@@ -8,7 +8,7 @@
 
 using namespace lc;
 
-LyricEdit::LyricEdit() : lyrics({{0.0f, "Line 1"}, {1.5f, "Line 2"}, {3.0f, "Line 3"}}) {
+LyricEdit::LyricEdit() {
 }
 LyricEdit::~LyricEdit() {
   if (!music.path.empty()) {

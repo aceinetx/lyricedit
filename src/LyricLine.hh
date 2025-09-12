@@ -4,8 +4,7 @@
 namespace lc {
 class LyricLine {
 private:
-  std::hash<std::string> hasher;
-  std::string hash;
+  size_t uid;
 
 public:
   float time;
@@ -15,7 +14,6 @@ public:
   LyricLine();
   LyricLine(float time, std::string text);
 
-  void updateHash();
-  std::string getHash();
+  size_t getUID();
 };
 } // namespace lc

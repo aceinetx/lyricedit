@@ -9,17 +9,20 @@
 using namespace lc;
 
 void LyricEdit::openMusicDialog() {
-  music.path = tinyfd::openFileDialog("Open music", "./", {"*.mp3"}, "Music file");
-  if (!std::filesystem::exists(music.path)) {
-    music.path.clear();
+  std::filesystem::path path = tinyfd::openFileDialog("Open music", "./", {"*.mp3"}, "Music file");
+  if (!std::filesystem::exists(path))
     return;
-  }
-  loadMusic(music.path);
+
+  loadMusic(path);
+  music.path = path;
 }
 
 void LyricEdit::saveLRCDialog() {
-  std::string path = tinyfd::saveFileDialog("Save lyrics", "./", {"*.lrc"}, "Lyrics file");
-  path.append(".lrc");
+  std::filesystem::path path =
+      tinyfd::saveFileDialog("Save lyrics", "./", {"*.lrc"}, "Lyrics file");
+  if (!path.has_extension()) {
+    path.replace_extension("lrc");
+  }
 
   std::ofstream file(path);
   file << LRCSerailizer::serialize(lyrics);
@@ -27,9 +30,11 @@ void LyricEdit::saveLRCDialog() {
 }
 
 void LyricEdit::openLRCDialog() {
-  std::string path = tinyfd::openFileDialog("Save lyrics", "./", {"*.lrc"}, "Lyrics file");
+  std::filesystem::path path =
+      tinyfd::openFileDialog("Save lyrics", "./", {"*.lrc"}, "Lyrics file");
   if (!std::filesystem::exists(path))
     return;
+
   std::string text;
 
   std::ifstream file(path);

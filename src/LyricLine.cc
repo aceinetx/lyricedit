@@ -2,18 +2,19 @@
 
 using namespace lc;
 
+size_t get_uid() {
+  static size_t g_uid = 0;
+  return ++g_uid;
+}
+
 LyricLine::LyricLine() {
-  updateHash();
+  uid = get_uid();
 }
 
 LyricLine::LyricLine(float time, std::string text) : text(text), time(time) {
-  updateHash();
+  uid = get_uid();
 }
 
-void LyricLine::updateHash() {
-  hash = hasher(text);
-}
-
-std::string LyricLine::getHash() {
-  return hash;
+size_t LyricLine::getUID() {
+  return uid;
 }
