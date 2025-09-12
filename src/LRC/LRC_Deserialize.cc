@@ -8,7 +8,6 @@ std::regex g_lyricLineRegex("\\[[0-9][0-9]:[0-9][0-9]\\.[0-9][0-9]\\]?.*");
 std::regex g_songTitleRegex("\\[ti\\:.*\\]$");
 std::regex g_artistRegex("\\[ti\\:.*\\]$");
 std::regex g_albumRegex("\\[al\\:.*\\]$");
-std::regex g_albumRegex("\\[al\\:.*\\]$");
 
 void LRC::deserialize(std::string text) {
   std::vector<std::string> lines = Util::split(text, "\n");
