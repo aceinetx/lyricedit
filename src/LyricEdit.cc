@@ -56,6 +56,6 @@ void LyricEdit::run(std::string autoloadMusicPath) {
 }
 
 void LyricEdit::sortLyricsArray() {
-  std::sort(lyrics.begin(), lyrics.end(),
+  std::sort(lrc.lyrics.begin(), lrc.lyrics.end(),
             [](const LyricLine& a, const LyricLine& b) -> bool { return a.time < b.time; });
 }

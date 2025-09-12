@@ -1,5 +1,5 @@
 #pragma once
-#include "LyricLine.hh"
+#include "LRC/LRC.hh"
 #include "MusicResource.hh"
 #include <vector>
 
@@ -7,7 +7,7 @@ namespace lc {
 class LyricEdit {
 private:
   MusicResource music;
-  std::vector<LyricLine> lyrics;
+  LRC lrc;
 
 private:
   LyricEdit();
@@ -18,6 +18,7 @@ private:
   void drawFileWindowContent();
   void drawSongControlsWindowContent();
   void drawLyricsWindowContent();
+  void drawEditWindowContent();
 
 public:
   LyricEdit(const LyricEdit&) = delete;

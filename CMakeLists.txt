@@ -25,9 +25,9 @@ function(add_externals)
     add_library(rlImGui STATIC "external/rlImGui/rlImGui.cpp")
 
     # imgui
-    include_directories("external/imgui")
+    include_directories("external/imgui" "external/imgui/misc/cpp")
     file(GLOB IMGUI_SOURCES CONFIGURE_DEPENDS "external/imgui/*.cpp")
-    add_library(imgui STATIC ${IMGUI_SOURCES})
+    add_library(imgui STATIC ${IMGUI_SOURCES} "external/imgui/misc/cpp/imgui_stdlib.cpp")
 
     # libtinyfiledialogs
     include_directories("external/libtinyfiledialogs/")

@@ -1,5 +1,3 @@
-#include "LRC/LRCDeserializer.hh"
-#include "LRC/LRCSerializer.hh"
 #include "LyricEdit.hh"
 #include <filesystem>
 #include <fstream>
@@ -25,7 +23,7 @@ void LyricEdit::saveLRCDialog() {
   }
 
   std::ofstream file(path);
-  file << LRCSerailizer::serialize(lyrics);
+  file << lrc.serialize();
   file.close();
 }
 
@@ -43,5 +41,5 @@ void LyricEdit::openLRCDialog() {
   text = buffer.str();
   file.close();
 
-  lyrics = LRCDeserializer::deserialize(text);
+  lrc.deserialize(text);
 }

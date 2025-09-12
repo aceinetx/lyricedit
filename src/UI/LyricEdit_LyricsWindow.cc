@@ -13,19 +13,10 @@ void LyricEdit::drawLyricsWindowContent() {
   static auto& io = ImGui::GetIO();
   static size_t editingLyricIndex = -1;
   static char editingLyricText[2048];
+  auto& lyrics = lrc.lyrics;
 
   bool sortLyrics = false;
   float musicTimePlayed = GetMusicTimePlayed(music.raylibResource);
-
-  if (ImGui::Button("Add line at current time")) {
-    LyricLine line;
-    line.time = GetMusicTimePlayed(music.raylibResource);
-    line.text = LC_FORMAT("Lyric {}", lyrics.size() + 1);
-    lyrics.push_back(line);
-    sortLyricsArray();
-  }
-
-  ImGui::Separator();
 
   // Find current lyric time
   size_t currentLyricIndex = -1;
