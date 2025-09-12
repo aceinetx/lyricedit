@@ -17,6 +17,7 @@ void LyricEdit::drawImGui() {
   ImGui::SetNextWindowPos({0, 0});
   ImGui::Begin("File", nullptr, defaultWindowFlags);
   if (ImGui::Button("Open .mp3")) {
+    openMusicDialog();
   }
   ImGui::Button("Open .lrc");
   prevWindowHeight = ImGui::GetWindowHeight();

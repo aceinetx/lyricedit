@@ -2,7 +2,8 @@
 #include "tinyfiledialogs.h"
 
 void tinyfd::openFileDialog(std::string title, std::string defaultPathAndFile,
-                            std::vector<std::string> fillerPatterns) {
+                            std::vector<std::string> fillerPatterns,
+                            std::string singleFilterDescription) {
   char const* const aTitle = title.c_str();
   char const* const aDefaultPathAndFile = defaultPathAndFile.c_str();
   int const aNumOfFilterPatterns = fillerPatterns.size();
@@ -15,6 +16,8 @@ void tinyfd::openFileDialog(std::string title, std::string defaultPathAndFile,
       aFilterPatterns[i] = const_cast<char*>(fillerPatterns[i].c_str());
     }
   }
-  tinyfd_openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, nullptr,
-                        0);
+  tinyfd_openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns,
+                        singleFilterDescription.c_str(), 0);
+  if (aFilterPatterns)
+    delete aFilterPatterns;
 }

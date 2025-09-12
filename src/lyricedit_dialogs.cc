@@ -4,5 +4,5 @@
 using namespace lc;
 
 void LyricEdit::openMusicDialog() {
-  tinyfd::openFileDialog("Open music", "", {"*.mp3"});
+  tinyfd::openFileDialog("Open music", "./", {"*.mp3"}, "Music file");
 }

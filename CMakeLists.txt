@@ -40,6 +40,11 @@ endfunction()
 add_raylib()
 add_externals()
 
+if(LINUX)
+    add_compile_options("-fsanitize=address")
+    add_link_options("-fsanitize=address")
+endif()
+
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS "src/*.c*")
 add_executable(lyricedit ${SOURCE})
 target_link_libraries(lyricedit raylib rlImGui imgui tinyfiledialogs tinyfd_cpp)

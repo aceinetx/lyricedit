@@ -9,5 +9,5 @@
 
 namespace tinyfd {
 void openFileDialog(std::string title, std::string defaultPathAndFile,
-                    std::vector<std::string> fillerPatterns);
+                    std::vector<std::string> fillerPatterns, std::string singleFilterDescription);
 }
