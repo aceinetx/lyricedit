@@ -4,10 +4,8 @@
 
 using namespace lc;
 
-std::regex g_lyricLineRegex("\\[[0-9][0-9]:[0-9][0-9]\\.[0-9][0-9]\\]?.*");
-std::regex g_songTitleRegex("\\[ti\\:.*\\]$");
-std::regex g_artistRegex("\\[ti\\:.*\\]$");
-std::regex g_albumRegex("\\[al\\:.*\\]$");
+std::regex g_lyricRegex("\\[[0-9][0-9]:[0-9][0-9]\\.[0-9][0-9]\\]?.*");
+std::regex g_metadataRegex(R"exp(\[([a-zA-Z]+):([^\]]+)\])exp");
 
 void LRC::deserialize(std::string text) {
   std::vector<std::string> lines = Util::split(text, "\n");
@@ -18,8 +16,28 @@ void LRC::deserialize(std::string text) {
     if (line.empty())
       continue;
 
-    if (std::regex_match(line, g_lyricLineRegex)) {
-      // parse time
+    // parse metadata
+    std::smatch metadata_match;
+    if (std::regex_search(line, metadata_match, g_metadataRegex)) {
+      std::string key = metadata_match[1];
+      std::string val = metadata_match[2];
+      if (key == "ti")
+        songTitle = val;
+      if (key == "ar")
+        artist = val;
+      if (key == "al")
+        album = val;
+      if (key == "au")
+        author = val;
+      if (key == "lr")
+        lyricist = val;
+      if (key == "by")
+        lrcAuthor = val;
+      continue;
+    }
+
+    // parse time
+    if (std::regex_match(line, g_lyricRegex)) {
       float time = 0.0f;
 
       int minutes, seconds, milliseconds;
@@ -32,16 +50,7 @@ void LRC::deserialize(std::string text) {
       std::string text = line;
       text.erase(text.begin(), text.begin() + text.find(']') + 1);
       lyrics.push_back({time, text});
-    } else if (std::regex_match(line, g_songTitleRegex)) {
-      std::string text = line;
-      text.erase(text.begin(), text.begin() + text.find(':') + 1);
-      text.pop_back();
-      songTitle = text;
-    } else if (std::regex_match(line, g_artistRegex)) {
-      std::string text = line;
-      text.erase(text.begin(), text.begin() + text.find(':') + 1);
-      text.pop_back();
-      artist = text;
+      continue;
     }
   }
 }

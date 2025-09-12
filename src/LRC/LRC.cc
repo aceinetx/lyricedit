@@ -3,5 +3,5 @@
 
 using namespace lc;
 
-LRC::LRC() : length(0.0f) {
+LRC::LRC() {
 }

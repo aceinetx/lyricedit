@@ -11,7 +11,6 @@ public:
   std::string album;
   std::string author;
   std::string lyricist;
-  float length;
   std::string lrcAuthor;
   std::vector<LyricLine> lyrics;
 

@@ -12,7 +12,6 @@ void LyricEdit::drawEditWindowContent() {
   ImGui::InputText("Album", &lrc.album);
   ImGui::InputText("Author", &lrc.author);
   ImGui::InputText("Lyricist", &lrc.lyricist);
-  ImGui::InputFloat("Length (seconds)", &lrc.length);
   ImGui::InputText("LRC Author", &lrc.lrcAuthor);
 
   ImGui::SeparatorText("Lyrics");

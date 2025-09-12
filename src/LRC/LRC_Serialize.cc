@@ -20,9 +20,6 @@ std::string LRC::serialize() {
   if (!lyricist.empty()) {
     res += LC_FORMAT("[lr:{}]\n", lyricist);
   }
-  if (length > 0) {
-    res += LC_FORMAT("[length: {}:{}]\n", (int)(length / 60), (int)length % 60);
-  }
   if (!lrcAuthor.empty()) {
     res += LC_FORMAT("[by:{}]\n", lrcAuthor);
   }
