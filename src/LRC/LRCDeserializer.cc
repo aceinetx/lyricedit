@@ -3,7 +3,7 @@
 
 using namespace lc;
 
-std::vector<LyricLine> LRCDeserailizer::deserialize(std::string lrc) {
+std::vector<LyricLine> LRCDeserializer::deserialize(std::string lrc) {
   std::vector<LyricLine> lyrics;
   std::vector<std::string> lines = Util::split(lrc, "\n");
 

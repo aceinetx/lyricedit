@@ -3,7 +3,7 @@
 #include <vector>
 
 namespace lc {
-namespace LRCDeserailizer {
+namespace LRCDeserializer {
 std::vector<LyricLine> deserialize(std::string lrc);
 }
 } // namespace lc
