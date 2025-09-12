@@ -7,6 +7,10 @@ struct MusicResource {
   Music raylibResource;
   std::string path;
 
-  std::string getTimeFormatted();
+  int getPlayedTimeMilliseconds();
+  int getPlayedTimeSeconds();
+  int getPlayedTimeMinutes();
+
+  std::string getPlayedTimeFormatted();
 };
 } // namespace lc

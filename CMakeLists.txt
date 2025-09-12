@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(lyricedit)
 
+set(CMAKE_CXX_STANDARD 20)
+
 function(add_raylib)
     find_package(raylib 5.5)
     if(NOT raylib_FOUND)
@@ -37,8 +39,22 @@ function(add_externals)
     target_link_libraries(tinyfd_cpp tinyfiledialogs)
 endfunction()
 
+function(copy_assets_target)
+    set(assets_SOURCE_DIR "${CMAKE_SOURCE_DIR}/assets")
+    set(assets_DESTINATION_DIR "${CMAKE_BINARY_DIR}/assets")
+
+    file(COPY ${assets_SOURCE_DIR} DESTINATION ${assets_DESTINATION_DIR})
+
+    add_custom_target(copy_assets ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/assets" "${CMAKE_BINARY_DIR}/assets"
+        COMMENT "Copying assets from ${assets_SOURCE_DIR} to ${assets_DESTINATION_DIR}"
+    )
+endfunction()
+
 add_raylib()
 add_externals()
+copy_assets_target()
 
 if(LINUX)
     add_compile_options("-fsanitize=address")
@@ -48,3 +64,4 @@ endif()
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS "src/*.c*")
 add_executable(lyricedit ${SOURCE})
 target_link_libraries(lyricedit raylib rlImGui imgui tinyfiledialogs tinyfd_cpp)
+add_dependencies(lyricedit copy_assets)

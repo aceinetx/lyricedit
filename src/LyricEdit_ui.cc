@@ -1,5 +1,4 @@
 #include "LyricEdit.hh"
-#include "Util.hh"
 #include <imgui.h>
 #include <raylib.h>
 
@@ -9,44 +8,30 @@ void LyricEdit::draw() {
 }
 
 void LyricEdit::drawImGui() {
-  constexpr float defaultWindowWidth = 150;
+  constexpr float defaultWindowWidth = 300;
   constexpr ImGuiWindowFlags defaultWindowFlags =
       ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
   float prevWindowHeight;
+  static auto& io = ImGui::GetIO();
 
   ImGui::SetNextWindowSize({defaultWindowWidth, 0});
   ImGui::SetNextWindowPos({0, 0});
   ImGui::Begin("File", nullptr, defaultWindowFlags);
-  if (ImGui::Button("Open .mp3")) {
-    openMusicDialog();
-  }
-  ImGui::Button("Open .lrc");
+  drawFileWindowContent();
   prevWindowHeight = ImGui::GetWindowHeight();
   ImGui::End();
 
   ImGui::SetNextWindowSize({defaultWindowWidth, 0});
   ImGui::SetNextWindowPos({0, prevWindowHeight});
   ImGui::Begin("Song controls", nullptr, defaultWindowFlags);
+  drawSongControlsWindowContent();
+  prevWindowHeight = ImGui::GetWindowHeight();
+  ImGui::End();
 
-  if (!music.path.empty()) {
-    ImGui::Text("%s", music.getTimeFormatted().c_str());
-
-    if (ImGui::Button("Play"))
-      playMusic();
-    ImGui::SameLine();
-    if (ImGui::Button("Stop"))
-      stopMusic();
-
-    if (ImGui::Button("Pause/Resume")) {
-      if (IsMusicStreamPlaying(music.raylibResource))
-        pauseMusic();
-      else
-        resumeMusic();
-    }
-    ImGui::SameLine();
-  } else {
-    ImGui::Text("Load a song first");
-  }
-
+  ImGui::SetNextWindowPos({defaultWindowWidth, 0});
+  ImGui::SetNextWindowSize({io.DisplaySize.x - defaultWindowWidth, io.DisplaySize.y});
+  ImGui::Begin("Lyrics", nullptr,
+               ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+  drawLyricsWindowContent();
   ImGui::End();
 }
