@@ -38,7 +38,7 @@ void LyricEdit::drawLyricsWindowContent() {
     }
 
     // Push styling
-    ImGui::PushFont(NULL, 20.0f);
+    ImGui::PushFont(NULL, 25.0f);
 
     if (!isEditing) {
       // Push color
@@ -55,7 +55,7 @@ void LyricEdit::drawLyricsWindowContent() {
     // Pop styling
     ImGui::PopFont();
 
-    float controlCursorPosY = ImGui::GetCursorPosY() - 20.0f;
+    float controlCursorPosY = ImGui::GetCursorPosY() - 25.0f;
     if (isEditing)
       controlCursorPosY -= 6.0f;
 

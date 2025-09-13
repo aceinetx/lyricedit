@@ -31,6 +31,9 @@ void LyricEdit::run(std::string autoloadMusicPath) {
   auto& io = ImGui::GetIO();
   auto& style = ImGui::GetStyle();
   io.IniFilename = nullptr;
+  io.Fonts->ClearFonts();
+  io.Fonts->AddFontFromFileTTF("./assets/font.ttf", 18.0f, nullptr,
+                               io.Fonts->GetGlyphRangesDefault());
 
   if (!autoloadMusicPath.empty())
     loadMusic(autoloadMusicPath);
