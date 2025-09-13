@@ -36,9 +36,9 @@ void LyricEdit::drawImGui() {
 
   ImGui::SetNextWindowPos({leftSideWindowsWidth, 0});
   ImGui::SetNextWindowSize({io.DisplaySize.x - leftSideWindowsWidth, io.DisplaySize.y});
-  ImGui::Begin("Lyrics", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+  ImGui::Begin("Lyrics", nullptr,
+               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
   drawLyricsWindowContent();
 
-  leftSideWindowsWidth = io.DisplaySize.x - ImGui::GetWindowWidth();
   ImGui::End();
 }
