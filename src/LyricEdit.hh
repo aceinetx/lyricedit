@@ -9,6 +9,8 @@ private:
   MusicResource music;
   LRC lrc;
 
+  float leftSideWindowsWidth = 300;
+
 private:
   LyricEdit();
   ~LyricEdit();

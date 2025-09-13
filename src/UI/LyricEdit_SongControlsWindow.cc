@@ -9,6 +9,7 @@ void LyricEdit::drawSongControlsWindowContent() {
     // * Time
     float time = GetMusicTimePlayed(music.raylibResource);
     float max_time = GetMusicTimeLength(music.raylibResource);
+    ImGui::SetNextItemWidth(leftSideWindowsWidth / 1.5f);
     if (ImGui::SliderFloat("##time", &time, 0, max_time)) {
       SeekMusicStream(music.raylibResource, time);
     }
@@ -17,6 +18,7 @@ void LyricEdit::drawSongControlsWindowContent() {
 
     // * Volume
     static float volume = 1.0f;
+    ImGui::SetNextItemWidth(leftSideWindowsWidth / 1.5f);
     if (ImGui::DragFloat("Volume", &volume, 0.01f)) {
       SetMusicVolume(music.raylibResource, volume);
       if (volume < 0)
