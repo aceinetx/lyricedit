@@ -1,6 +1,6 @@
 # lyricedit
 C++ Raylib & ImGui application to create .lrc song lyrics
-<img width="1277" height="716" alt="screenshot-2025-09-12_22-32-26" src="https://github.com/user-attachments/assets/6fd3e3de-6eac-474e-9adc-58e765e7148d" />
+<img width="1275" height="715" alt="screenshot-2025-09-13_10-25-15" src="https://github.com/user-attachments/assets/572f1d8f-03b8-4007-a2eb-833fd05c8e12" />
 
 
 ## Dependencies
