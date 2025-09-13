@@ -11,6 +11,7 @@
 using namespace lc;
 
 void LyricEdit::drawLyricsWindowContent() {
+  static constexpr float lyricFontSize = 25.0f;
   static auto& io = ImGui::GetIO();
   static size_t editingLyricIndex = -1;
   auto& lyrics = lrc.lyrics;
@@ -38,7 +39,7 @@ void LyricEdit::drawLyricsWindowContent() {
     }
 
     // Push styling
-    ImGui::PushFont(NULL, 25.0f);
+    ImGui::PushFont(NULL, lyricFontSize);
 
     if (!isEditing) {
       // Push color
@@ -55,7 +56,7 @@ void LyricEdit::drawLyricsWindowContent() {
     // Pop styling
     ImGui::PopFont();
 
-    float controlCursorPosY = ImGui::GetCursorPosY() - 25.0f;
+    float controlCursorPosY = ImGui::GetCursorPosY() - lyricFontSize;
     if (isEditing)
       controlCursorPosY -= 6.0f;
 
