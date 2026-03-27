@@ -50,6 +50,7 @@ void LyricEdit::drawLyricsWindowContent() {
       // Pop color
       ImGui::PopStyleColor();
     } else {
+      ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 400);
       ImGui::InputText(LC_UNIQUE_EX("", "text"), &lyric.text);
     }
 
@@ -75,19 +76,23 @@ void LyricEdit::drawLyricsWindowContent() {
     }
 
     // Line control
-    // Remove button
     ImGui::SetCursorPosY(controlCursorPosY);
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 250);
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 350);
+    // Remove button
     if (ImGui::Button(LC_UNIQUE("Remove"))) {
       lyrics.erase(lyrics.begin() + i);
       i--;
       continue;
     }
     // Edit button
-    ImGui::SetCursorPosY(controlCursorPosY);
-    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 300);
+    ImGui::SameLine();
     if (ImGui::Button(LC_UNIQUE("Edit"))) {
       editingLyricIndex = !isEditing ? i : -1;
+    }
+    // Jump button
+    ImGui::SameLine();
+    if (ImGui::Button(LC_UNIQUE("Jump"))) {
+      SeekMusicStream(music.raylibResource, lyric.time);
     }
 
     ImGui::Spacing();
