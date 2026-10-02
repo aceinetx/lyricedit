@@ -9,6 +9,9 @@ pub fn main() void {
     im.rl.setup(true);
     defer im.rl.shutdown();
 
+    const io: *im.Io = im.getIo();
+    io.IniFilename = null;
+
     var open = false;
 
     while (!rl.windowShouldClose()) {

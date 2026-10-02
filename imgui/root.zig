@@ -10,6 +10,9 @@ pub const rl = struct {
     pub const end = rlim.rlImGuiEnd;
 };
 
+pub const Io = dcim.ImGuiIO;
+pub const getIo = dcim.ImGui_GetIO;
+
 pub const begin = dcim.ImGui_Begin;
 pub const end = dcim.ImGui_End;
 pub const showDemoWindow = dcim.ImGui_ShowDemoWindow;
