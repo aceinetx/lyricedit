@@ -41,25 +41,6 @@ pub fn main(init: std.process.Init) void {
     };
     defer lrc.deinit(init.gpa);
 
-    std.log.info("song_title: {s}", .{lrc.song_title});
-    std.log.info("artist: {s}", .{lrc.artist});
-    std.log.info("album: {s}", .{lrc.album});
-    std.log.info("author: {s}", .{lrc.author});
-    std.log.info("lyricist: {s}", .{lrc.lyricist});
-    std.log.info("lrc_author: {s}", .{lrc.lrc_author});
-    for (lrc.lyrics.items) |lyric| {
-        std.log.info("{}: {s}", .{ lyric.time, lyric.text });
-    }
-
-    {
-        var buffer: [2048]u8 = undefined;
-        var writer = std.Io.File.stdout().writer(init.io, &buffer);
-
-        lrc.serialize(&writer.interface) catch unreachable;
-
-        writer.flush() catch unreachable;
-    }
-
     if (false) {
         rl.initWindow(1280, 720, "lyricedit");
         defer rl.closeWindow();
