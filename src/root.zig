@@ -1,3 +1,5 @@
+const std = @import("std");
+const LRC = @import("lrc.zig").LRC;
 const rl = @import("raylib");
 const tfd = @import("tinyfiledialogs");
 const im = @import("imgui");
@@ -27,25 +29,57 @@ fn setupImGui() void {
     setupImGuiFont();
 }
 
-pub fn main() void {
-    rl.initWindow(1280, 720, "lyricedit");
-    defer rl.closeWindow();
+pub fn main(init: std.process.Init) void {
+    var lrc = blk: {
+        const file = std.Io.Dir.cwd().openFile(init.io, "ronin - tears in reflection.lrc", .{}) catch unreachable;
+        defer file.close(init.io);
 
-    im.rl.setup(true);
-    defer im.rl.shutdown();
+        var buffer: [2048]u8 = undefined;
+        var reader = file.reader(init.io, &buffer);
 
-    setupImGui();
+        break :blk LRC.deserialize(&reader.interface, init.gpa) catch unreachable;
+    };
+    defer lrc.deinit(init.gpa);
 
-    var open = false;
+    std.log.info("song_title: {s}", .{lrc.song_title});
+    std.log.info("artist: {s}", .{lrc.artist});
+    std.log.info("album: {s}", .{lrc.album});
+    std.log.info("author: {s}", .{lrc.author});
+    std.log.info("lyricist: {s}", .{lrc.lyricist});
+    std.log.info("lrc_author: {s}", .{lrc.lrc_author});
+    for (lrc.lyrics.items) |lyric| {
+        std.log.info("{}: {s}", .{ lyric.time, lyric.text });
+    }
 
-    while (!rl.windowShouldClose()) {
-        rl.beginDrawing();
-        rl.clearBackground(.black);
+    {
+        var buffer: [2048]u8 = undefined;
+        var writer = std.Io.File.stdout().writer(init.io, &buffer);
 
-        im.rl.begin();
-        im.showDemoWindow(&open);
-        im.rl.end();
+        lrc.serialize(&writer.interface) catch unreachable;
 
-        rl.endDrawing();
+        writer.flush() catch unreachable;
+    }
+
+    if (false) {
+        rl.initWindow(1280, 720, "lyricedit");
+        defer rl.closeWindow();
+
+        im.rl.setup(true);
+        defer im.rl.shutdown();
+
+        setupImGui();
+
+        var open = false;
+
+        while (!rl.windowShouldClose()) {
+            rl.beginDrawing();
+            rl.clearBackground(.black);
+
+            im.rl.begin();
+            im.showDemoWindow(&open);
+            im.rl.end();
+
+            rl.endDrawing();
+        }
     }
 }
