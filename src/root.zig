@@ -2,15 +2,8 @@ const rl = @import("raylib");
 const tfd = @import("tinyfiledialogs");
 const im = @import("imgui");
 
-pub fn main() void {
-    rl.initWindow(1280, 720, "lyricedit");
-    defer rl.closeWindow();
-
-    im.rl.setup(true);
-    defer im.rl.shutdown();
-
+fn setupImGuiFont() void {
     const io: *im.Io = im.getIo();
-    io.IniFilename = null;
 
     var font_cfg = im.ImFontConfig_default;
     font_cfg.FontDataOwnedByAtlas = false;
@@ -25,6 +18,23 @@ pub fn main() void {
         &font_cfg,
         im.ImFontAtlas_GetGlyphRangesDefault(io.Fonts),
     );
+}
+
+fn setupImGui() void {
+    const io: *im.Io = im.getIo();
+    io.IniFilename = null;
+
+    setupImGuiFont();
+}
+
+pub fn main() void {
+    rl.initWindow(1280, 720, "lyricedit");
+    defer rl.closeWindow();
+
+    im.rl.setup(true);
+    defer im.rl.shutdown();
+
+    setupImGui();
 
     var open = false;
 
