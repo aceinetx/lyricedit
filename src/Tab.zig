@@ -204,6 +204,7 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
                     .w = 0.7,
                 });
             }
+            im.pushFontFloat(null, 25.0);
             _ = im.inputText(
                 im.uniqueId(arena, "", "line", lyric.id),
                 @ptrCast(&lyric.text),
@@ -213,6 +214,7 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
             if (!is_current) {
                 im.popStyleColor();
             }
+            im.popFont();
             im.popItemWidth();
 
             _ = im.tableNextColumn();

@@ -277,9 +277,55 @@ pub const Color = struct {
 
 pub const pushStyleColorImVec4 = dcim.ImGui_PushStyleColorImVec4;
 pub const popStyleColor = dcim.ImGui_PopStyleColor;
+
+pub const StyleVar = struct {
+    pub const alpha: c_int = dcim.ImGuiStyleVar_Alpha;
+    pub const disabledalpha: c_int = dcim.ImGuiStyleVar_DisabledAlpha;
+    pub const windowpadding: c_int = dcim.ImGuiStyleVar_WindowPadding;
+    pub const windowrounding: c_int = dcim.ImGuiStyleVar_WindowRounding;
+    pub const windowbordersize: c_int = dcim.ImGuiStyleVar_WindowBorderSize;
+    pub const windowminsize: c_int = dcim.ImGuiStyleVar_WindowMinSize;
+    pub const windowtitlealign: c_int = dcim.ImGuiStyleVar_WindowTitleAlign;
+    pub const childrounding: c_int = dcim.ImGuiStyleVar_ChildRounding;
+    pub const childbordersize: c_int = dcim.ImGuiStyleVar_ChildBorderSize;
+    pub const popuprounding: c_int = dcim.ImGuiStyleVar_PopupRounding;
+    pub const popupbordersize: c_int = dcim.ImGuiStyleVar_PopupBorderSize;
+    pub const framepadding: c_int = dcim.ImGuiStyleVar_FramePadding;
+    pub const framerounding: c_int = dcim.ImGuiStyleVar_FrameRounding;
+    pub const framebordersize: c_int = dcim.ImGuiStyleVar_FrameBorderSize;
+    pub const itemspacing: c_int = dcim.ImGuiStyleVar_ItemSpacing;
+    pub const iteminnerspacing: c_int = dcim.ImGuiStyleVar_ItemInnerSpacing;
+    pub const indentspacing: c_int = dcim.ImGuiStyleVar_IndentSpacing;
+    pub const cellpadding: c_int = dcim.ImGuiStyleVar_CellPadding;
+    pub const scrollbarsize: c_int = dcim.ImGuiStyleVar_ScrollbarSize;
+    pub const scrollbarrounding: c_int = dcim.ImGuiStyleVar_ScrollbarRounding;
+    pub const scrollbarpadding: c_int = dcim.ImGuiStyleVar_ScrollbarPadding;
+    pub const grabminsize: c_int = dcim.ImGuiStyleVar_GrabMinSize;
+    pub const grabrounding: c_int = dcim.ImGuiStyleVar_GrabRounding;
+    pub const imagebordersize: c_int = dcim.ImGuiStyleVar_ImageBorderSize;
+    pub const tabrounding: c_int = dcim.ImGuiStyleVar_TabRounding;
+    pub const tabbordersize: c_int = dcim.ImGuiStyleVar_TabBorderSize;
+    pub const tabminwidthbase: c_int = dcim.ImGuiStyleVar_TabMinWidthBase;
+    pub const tabminwidthshrink: c_int = dcim.ImGuiStyleVar_TabMinWidthShrink;
+    pub const tabbarbordersize: c_int = dcim.ImGuiStyleVar_TabBarBorderSize;
+    pub const tabbaroverlinesize: c_int = dcim.ImGuiStyleVar_TabBarOverlineSize;
+    pub const tableangledheadersangle: c_int = dcim.ImGuiStyleVar_TableAngledHeadersAngle;
+    pub const tableangledheaderstextalign: c_int = dcim.ImGuiStyleVar_TableAngledHeadersTextAlign;
+    pub const treelinessize: c_int = dcim.ImGuiStyleVar_TreeLinesSize;
+    pub const treelinesrounding: c_int = dcim.ImGuiStyleVar_TreeLinesRounding;
+    pub const buttontextalign: c_int = dcim.ImGuiStyleVar_ButtonTextAlign;
+    pub const selectabletextalign: c_int = dcim.ImGuiStyleVar_SelectableTextAlign;
+    pub const separatortextbordersize: c_int = dcim.ImGuiStyleVar_SeparatorTextBorderSize;
+    pub const separatortextalign: c_int = dcim.ImGuiStyleVar_SeparatorTextAlign;
+    pub const separatortextpadding: c_int = dcim.ImGuiStyleVar_SeparatorTextPadding;
+};
+
 pub const pushStyleVar = dcim.ImGui_PushStyleVar;
 pub const pushStyleVarImVec2 = dcim.ImGui_PushStyleVarImVec2;
 pub const popStyleVar = dcim.ImGui_PopStyleVar;
+pub const pushFont = dcim.ImGui_PushFont;
+pub const pushFontFloat = dcim.ImGui_PushFontFloat;
+pub const popFont = dcim.ImGui_PopFont;
 
 pub fn uniqueIdT(T: type, arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: T) [*c]const u8 {
     const base_fix = if (std.mem.findAny(u8, base, &.{0})) |i|
