@@ -1,9 +1,10 @@
 # lyricedit
 Raylib & ImGui application to create .lrc song lyrics
-<img width="1272" height="714" alt="screenshot-2025-09-13_12-22-39" src="https://github.com/user-attachments/assets/ab6d903f-ac01-4210-8324-492effde9e0b" />
+<img width="1274" height="712" alt="image" src="https://github.com/user-attachments/assets/95fd62b2-022a-47b1-b908-a09979cf1541" />
+
 
 ## Dependencies
-- Raylib
+- raylib
 - ImGui
 - rlImGui
 - libtinyfiledialogs
