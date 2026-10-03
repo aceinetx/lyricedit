@@ -1,3 +1,4 @@
+const std = @import("std");
 const tfd = @import("tinyfiledialogs");
 
 pub const DialogType = enum {
@@ -32,6 +33,56 @@ pub const IconType = enum {
     }
 };
 
-pub fn messageBox(title: [:0]const u8, message: [:0]const u8, dialog_type: DialogType, icon_type: IconType, default_button: i32) i32 {
-    return tfd.tinyfd_messageBox(title, message, dialog_type.toString(), icon_type.toString(), default_button);
+pub fn messageBox(
+    title: [:0]const u8,
+    message: [:0]const u8,
+    dialog_type: DialogType,
+    icon_type: IconType,
+    default_button: i32,
+) i32 {
+    return tfd.tinyfd_messageBox(
+        title,
+        message,
+        dialog_type.toString(),
+        icon_type.toString(),
+        default_button,
+    );
+}
+
+pub fn openFileDialog(
+    title: [:0]const u8,
+    default_path_or_file: ?[:0]const u8,
+    filter_patterns: []const [:0]const u8,
+    single_filter_description: [:0]const u8,
+    allow_multiple_selects: bool,
+) []const u8 {
+    const file: [*:0]const u8 = tfd.tinyfd_openFileDialog(
+        title,
+        default_path_or_file orelse null,
+        @intCast(filter_patterns.len),
+        @ptrCast(filter_patterns.ptr),
+        single_filter_description,
+        @intFromBool(allow_multiple_selects),
+    );
+    const len = std.mem.len(file);
+    return file[0..len];
+}
+
+pub fn openFileDialogSentinel(
+    title: [:0]const u8,
+    default_path_or_file: ?[:0]const u8,
+    filter_patterns: []const [:0]const u8,
+    single_filter_description: [:0]const u8,
+    allow_multiple_selects: bool,
+) [:0]const u8 {
+    const file: [*:0]const u8 = tfd.tinyfd_openFileDialog(
+        title,
+        default_path_or_file orelse null,
+        @intCast(filter_patterns.len),
+        @ptrCast(filter_patterns.ptr),
+        single_filter_description,
+        @intFromBool(allow_multiple_selects),
+    );
+    const len = std.mem.len(file);
+    return file[0..len :0];
 }

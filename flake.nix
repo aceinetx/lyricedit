@@ -59,9 +59,14 @@
             libxi
             libGL
           ];
-          shellHook = ''
-            export LD_LIBRARY_PATH="''${LD_LIBRARY_PATH}''${LD_LIBRARY_PATH:+:}${pkgs.libglvnd}/lib"
-          '';
+          env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+            pkgs.libglvnd
+            pkgs.alsa-lib
+          ];
+
+          #shellHook = ''
+          #  export LD_LIBRARY_PATH="''${LD_LIBRARY_PATH}''${LD_LIBRARY_PATH:+:}${pkgs.libglvnd}/lib"
+          #'';
         };
       }
     );
