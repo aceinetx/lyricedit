@@ -9,6 +9,7 @@ const setup = @import("setup.zig");
 const util = @import("util.zig");
 
 var tabs: Tabs = undefined;
+var quit: bool = false;
 
 // ----------------------------------------------------------
 
@@ -41,6 +42,76 @@ fn draw_tab_bar() void {
     }
 }
 
+fn drawMenuBar(io: std.Io) void {
+    if (im.beginMainMenuBar()) {
+        defer im.endMainMenuBar();
+
+        if (im.beginMenu("File")) {
+            defer im.endMenu();
+
+            if (im.menuItem("New tab")) {
+                tabs.addTab() catch {};
+            }
+
+            if (tabs.current) |current| {
+                im.separator();
+
+                var tab = &tabs.tabs.items[current];
+
+                if (im.menuItem("Open song")) {
+                    if (tfd.openFileDialogSentinel(
+                        "Open song",
+                        null,
+                        &.{"*.mp3"},
+                        "Audio songs",
+                        false,
+                    )) |path| {
+                        if (rl.loadMusicStream(path)) |song| {
+                            tab.setSong(song);
+                        } else |e| {
+                            std.log.err("Error loading song: {}", .{e});
+                        }
+                    }
+                }
+
+                if (im.menuItem("Open LRC")) {
+                    if (tfd.openFileDialog(
+                        "Open lyrics file",
+                        null,
+                        &.{"*.lrc"},
+                        "Lyrics file",
+                        false,
+                    )) |path| {
+                        tab.loadLRCFromPath(io, path) catch |e| {
+                            std.log.err("Failed to load LRC: {}", .{e});
+                        };
+                    }
+                }
+
+                im.separator();
+
+                if (im.menuItem("Save LRC")) {
+                    if (tfd.saveFileDialog(
+                        "Save lyrics file",
+                        null,
+                        &.{"*.lrc"},
+                        "Lyrics file",
+                    )) |path| {
+                        tab.saveLRC(io, path) catch |e| {
+                            std.log.err("Failed to save LRC: {}", .{e});
+                        };
+                    }
+                }
+            }
+
+            im.separator();
+            if (im.menuItem("Quit")) {
+                quit = true;
+            }
+        }
+    }
+}
+
 // ----------------------------------------------------------
 
 pub fn main(init: std.process.Init) void {
@@ -63,7 +134,7 @@ pub fn main(init: std.process.Init) void {
     var frame_arena = std.heap.ArenaAllocator.init(init.gpa);
     defer frame_arena.deinit();
 
-    while (!rl.windowShouldClose()) {
+    while (!rl.windowShouldClose() and !quit) {
         _ = frame_arena.reset(.retain_capacity);
 
         rl.beginDrawing();
@@ -73,73 +144,7 @@ pub fn main(init: std.process.Init) void {
 
         im.rl.begin();
 
-        if (im.beginMainMenuBar()) {
-            defer im.endMainMenuBar();
-
-            if (im.beginMenu("File")) {
-                defer im.endMenu();
-
-                if (im.menuItem("New tab")) {
-                    tabs.addTab() catch {};
-                }
-
-                if (tabs.current) |current| {
-                    im.separator();
-
-                    var tab = &tabs.tabs.items[current];
-
-                    if (im.menuItem("Open song")) {
-                        if (tfd.openFileDialogSentinel(
-                            "Open song",
-                            null,
-                            &.{"*.mp3"},
-                            "Audio songs",
-                            false,
-                        )) |path| {
-                            if (rl.loadMusicStream(path)) |song| {
-                                tab.setSong(song);
-                            } else |e| {
-                                std.log.err("Error loading song: {}", .{e});
-                            }
-                        }
-                    }
-
-                    if (im.menuItem("Open LRC")) {
-                        if (tfd.openFileDialog(
-                            "Open lyrics file",
-                            null,
-                            &.{"*.lrc"},
-                            "Lyrics file",
-                            false,
-                        )) |path| {
-                            tab.loadLRCFromPath(init.io, path) catch |e| {
-                                std.log.err("Failed to load LRC: {}", .{e});
-                            };
-                        }
-                    }
-
-                    im.separator();
-
-                    if (im.menuItem("Save LRC")) {
-                        if (tfd.saveFileDialog(
-                            "Save lyrics file",
-                            null,
-                            &.{"*.lrc"},
-                            "Lyrics file",
-                        )) |path| {
-                            tab.saveLRC(init.io, path) catch |e| {
-                                std.log.err("Failed to save LRC: {}", .{e});
-                            };
-                        }
-                    }
-                }
-
-                im.separator();
-                if (im.menuItem("Quit")) {
-                    break;
-                }
-            }
-        }
+        drawMenuBar(init.io);
 
         im.setNextWindowPos(.{
             .x = 0,
