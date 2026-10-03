@@ -118,6 +118,8 @@ pub fn main(init: std.process.Init) void {
                         }
                     }
 
+                    im.separator();
+
                     if (im.menuItem("Save LRC")) {
                         if (tfd.saveFileDialog(
                             "Save lyrics file",
@@ -130,6 +132,11 @@ pub fn main(init: std.process.Init) void {
                             };
                         }
                     }
+                }
+
+                im.separator();
+                if (im.menuItem("Quit")) {
+                    break;
                 }
             }
         }
