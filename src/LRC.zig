@@ -1,11 +1,7 @@
 const std = @import("std");
+const LyricStorage = @import("LyricStorage.zig");
 
 const LRC = @This();
-
-pub const LyricLine = struct {
-    time: f32 = 0.0,
-    text: [256]u8 = std.mem.zeroes([256]u8),
-};
 
 pub const DeserializeError = error{
     InvalidSyntax,
@@ -21,24 +17,26 @@ const lrc_tags: []const struct { []const u8, []const u8 } = &.{
     .{ "re", "program" },
 };
 
-song_title: [256]u8,
-artist: [256]u8,
-album: [256]u8,
-author: [256]u8,
-lyricist: [256]u8,
-lrc_author: [256]u8,
-program: [256]u8,
+allocator: std.mem.Allocator,
+song_title: [256]u8 = @splat(0),
+artist: [256]u8 = @splat(0),
+album: [256]u8 = @splat(0),
+author: [256]u8 = @splat(0),
+lyricist: [256]u8 = @splat(0),
+lrc_author: [256]u8 = @splat(0),
+program: [256]u8 = @splat(0),
 
-lyrics: std.ArrayList(LyricLine),
+lyrics: LyricStorage,
 
-pub fn init() LRC {
-    var self = std.mem.zeroes(LRC);
-    self.lyrics = .empty;
-    return self;
+pub fn init(allocator: std.mem.Allocator) LRC {
+    return LRC{
+        .allocator = allocator,
+        .lyrics = .init(allocator),
+    };
 }
 
-pub fn deinit(self: *LRC, allocator: std.mem.Allocator) void {
-    self.lyrics.deinit(allocator);
+pub fn deinit(self: *LRC) void {
+    self.lyrics.deinit();
 }
 
 fn deserialize_tag_value(reader: *std.Io.Reader) DeserializeError![]const u8 {
@@ -48,7 +46,7 @@ fn deserialize_tag_value(reader: *std.Io.Reader) DeserializeError![]const u8 {
 }
 
 pub fn deserialize(reader: *std.Io.Reader, allocator: std.mem.Allocator) DeserializeError!LRC {
-    var self = LRC.init();
+    var self = LRC.init(allocator);
 
     while ((try reader.takeDelimiter('[')) != null) {
         const first_two = try reader.takeArray(2);
@@ -80,14 +78,14 @@ pub fn deserialize(reader: *std.Io.Reader, allocator: std.mem.Allocator) Deseria
 
             const text = try reader.takeDelimiter('\n') orelse return DeserializeError.InvalidSyntax;
 
-            var lyric = LyricLine{
+            var lyric = LyricStorage.LyricLine{
                 .time = time,
                 .text = undefined,
             };
 
             @memcpy(lyric.text[0..text.len], text);
 
-            try self.lyrics.append(allocator, lyric);
+            try self.lyrics.addLine(lyric);
         } else {
             _ = try reader.takeDelimiter('\n');
         }

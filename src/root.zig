@@ -1,94 +1,16 @@
 const std = @import("std");
 const LRC = @import("LRC.zig");
+const Tabs = @import("Tabs.zig");
+const LyricStorage = @import("LyricStorage.zig");
 const rl = @import("raylib");
 const tfd = @import("tinyfiledialogs");
 const im = @import("imgui");
 const setup = @import("setup.zig");
 const util = @import("util.zig");
 
-const Tab = struct {
-    allocator: std.mem.Allocator,
-    title: [255:0]u8 = @splat(0),
-    lrc: LRC,
-    song: ?rl.Music = null,
-
-    pub fn init(allocator: std.mem.Allocator) @This() {
-        return .{
-            .allocator = allocator,
-            .lrc = LRC.init(),
-        };
-    }
-
-    pub fn setSong(self: *@This(), song: ?rl.Music) void {
-        std.log.debug("song set", .{});
-        if (self.song != null) {
-            self.song.?.unload();
-            std.log.debug("song unloaded", .{});
-        }
-
-        self.song = song;
-    }
-
-    pub fn deinit(self: *@This()) void {
-        self.lrc.deinit(self.allocator);
-
-        self.setSong(null);
-    }
-
-    pub fn draw(self: *@This()) void {
-        _ = self;
-    }
-};
-
-const Tabs = struct {
-    const Self = @This();
-
-    allocator: std.mem.Allocator,
-    tabs: std.ArrayList(Tab) = .empty,
-    next_tab_id: usize = 1,
-    current: ?usize = null,
-
-    pub fn init(allocator: std.mem.Allocator) Self {
-        return .{
-            .allocator = allocator,
-        };
-    }
-
-    pub fn deinit(self: *Self) void {
-        for (self.tabs.items) |*tab|
-            tab.deinit();
-        self.tabs.deinit(self.allocator);
-    }
-
-    inline fn invalidateCurrent(self: *Self) void {
-        if (self.tabs.items.len == 0) {
-            self.current = null;
-        } else if (self.current == null) {
-            self.current = self.tabs.items.len - 1;
-        } else if (self.current.? >= self.tabs.items.len) {
-            self.current = self.tabs.items.len - 1;
-        }
-    }
-
-    pub inline fn addTab(self: *Self) !void {
-        var tab = Tab.init(self.allocator);
-        _ = try std.fmt.bufPrint(&tab.title, "Tab #{}", .{self.next_tab_id});
-        self.next_tab_id += 1;
-
-        try self.tabs.append(self.allocator, tab);
-
-        self.current = self.tabs.items.len - 1;
-        self.invalidateCurrent();
-    }
-
-    pub inline fn removeTab(self: *Self, index: usize) void {
-        var tab = self.tabs.swapRemove(index);
-        tab.deinit();
-        self.invalidateCurrent();
-    }
-};
-
 var tabs: Tabs = undefined;
+
+// ----------------------------------------------------------
 
 fn draw_tab_bar() void {
     var remove_tab_id: ?usize = null;
@@ -119,22 +41,7 @@ fn draw_tab_bar() void {
     }
 }
 
-fn draw_tab(id: usize) void {
-    const tab = &tabs.tabs.items[id];
-
-    if (im.button(">")) {
-        if (tab.song) |song| {
-            rl.playMusicStream(song);
-        }
-    }
-
-    if (tab.song) |song| {
-        rl.updateMusicStream(song);
-        std.log.debug("{}", .{
-            rl.getMusicTimePlayed(song),
-        });
-    }
-}
+// ----------------------------------------------------------
 
 pub fn main(init: std.process.Init) void {
     tabs = .init(init.gpa);
@@ -143,6 +50,8 @@ pub fn main(init: std.process.Init) void {
     rl.initWindow(1280, 720, "lyricedit");
     defer rl.closeWindow();
     rl.initAudioDevice();
+
+    rl.setWindowState(.{ .window_resizable = true });
 
     im.rl.setup(true);
     defer im.rl.shutdown();
@@ -210,7 +119,7 @@ pub fn main(init: std.process.Init) void {
             draw_tab_bar();
 
             if (tabs.current) |current| {
-                draw_tab(current);
+                tabs.tabs.items[current].draw();
             } else {}
         }
 

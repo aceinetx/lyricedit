@@ -110,3 +110,50 @@ pub const endTabItem = dcim.ImGui_EndTabItem;
 pub const text = dcim.ImGui_Text;
 pub const button = dcim.ImGui_Button;
 pub const sameLine = dcim.ImGui_SameLine;
+
+pub const SliderFlags = struct {
+    pub const none: c_int = 0;
+    pub const logarithmic: c_int = 1 << 5;
+    pub const no_round_to_format: c_int = 1 << 6;
+    pub const no_input: c_int = 1 << 7;
+    pub const wrap_around: c_int = 1 << 8;
+    pub const clamp_on_input: c_int = 1 << 9;
+    pub const clamp_zero_range: c_int = 1 << 10;
+    pub const no_speed_tweaks: c_int = 1 << 11;
+};
+
+pub const dragFloat = dcim.ImGui_DragFloat;
+pub const dragFloatEx = dcim.ImGui_DragFloatEx;
+
+pub const pushItemWidth = dcim.ImGui_PushItemWidth;
+pub const popItemWidth = dcim.ImGui_PopItemWidth;
+
+pub const InputTextFlags = struct {
+    pub const none: c_int = 0;
+    pub const chars_decimal: c_int = 1 << 0;
+    pub const chars_hexadecimal: c_int = 1 << 1;
+    pub const chars_scientific: c_int = 1 << 2;
+    pub const chars_uppercase: c_int = 1 << 3;
+    pub const chars_no_blank: c_int = 1 << 4;
+    pub const allow_tab_input: c_int = 1 << 5;
+    pub const enter_returns_true: c_int = 1 << 6;
+    pub const escape_clears_all: c_int = 1 << 7;
+    pub const ctrl_enter_for_new_line: c_int = 1 << 8;
+    pub const read_only: c_int = 1 << 9;
+    pub const password: c_int = 1 << 10;
+    pub const always_overwrite: c_int = 1 << 11;
+    pub const auto_select_all: c_int = 1 << 12;
+    pub const parse_empty_ref_val: c_int = 1 << 13;
+    pub const display_empty_ref_val: c_int = 1 << 14;
+    pub const no_horizontal_scroll: c_int = 1 << 15;
+    pub const no_undo_redo: c_int = 1 << 16;
+    pub const elide_left: c_int = 1 << 17;
+    pub const callback_completion: c_int = 1 << 18;
+    pub const callback_history: c_int = 1 << 19;
+    pub const callback_always: c_int = 1 << 20;
+    pub const callback_char_filter: c_int = 1 << 21;
+    pub const callback_resize: c_int = 1 << 22;
+    pub const callback_edit: c_int = 1 << 23;
+};
+
+pub const inputText = dcim.ImGui_InputText;
