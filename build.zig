@@ -111,16 +111,21 @@ fn setupTinyFileDialogs(
         .imports = &.{
             .{
                 .name = "tinyfiledialogs",
-                .module = b.addTranslateC(.{
-                    .root_source_file = b.path("external/libtinyfiledialogs/tinyfiledialogs.h"),
-                    .target = target,
-                    .optimize = optimize,
-                }).createModule(),
+                .module = blk: {
+                    const c = b.addTranslateC(.{
+                        .root_source_file = b.path("tinyfiledialogs/tinyfiledialogs_fix.h"),
+                        .target = target,
+                        .optimize = optimize,
+                    });
+                    c.addIncludePath(b.path("external/libtinyfiledialogs"));
+                    break :blk c.createModule();
+                },
             },
         },
     });
 
-    tinyfiledialogs.addCSourceFile(.{ .file = b.path("external/libtinyfiledialogs/tinyfiledialogs.c") });
+    tinyfiledialogs.addIncludePath(b.path("external/libtinyfiledialogs"));
+    tinyfiledialogs.addCSourceFile(.{ .file = b.path("tinyfiledialogs/tinyfiledialogs_fix.c") });
 
     return tinyfiledialogs;
 }
@@ -166,6 +171,11 @@ pub fn build(b: *std.Build) void {
         }),
     });
     exe.root_module.linkLibrary(raylib_artifact);
+
+    if (target.result.os.tag == .windows) {
+        exe.root_module.linkSystemLibrary("comdlg32", .{});
+        exe.root_module.linkSystemLibrary("ole32", .{});
+    }
 
     b.installArtifact(exe);
 
