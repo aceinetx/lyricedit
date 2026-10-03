@@ -7,6 +7,3 @@
 [submodule "external/dear_bindings"]
 	path = external/dear_bindings
 	url = https://github.com/dearimgui/dear_bindings/
-[submodule "external/libtinyfiledialogs"]
-	path = external/libtinyfiledialogs
-	url = https://git.code.sf.net/p/tinyfiledialogs/code
