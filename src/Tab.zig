@@ -59,6 +59,8 @@ pub fn saveLRC(self: *Tab, io: std.Io, path: []const u8) !void {
     var writer = file.writer(io, &buffer);
 
     try self.lrc.serialize(&writer.interface);
+
+    try writer.flush();
 }
 
 fn uniqueIdT(T: type, arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: T) [*c]const u8 {

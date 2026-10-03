@@ -55,7 +55,7 @@ pub fn openFileDialogSentinel(
     filter_patterns: []const [:0]const u8,
     single_filter_description: [:0]const u8,
     allow_multiple_selects: bool,
-) [:0]const u8 {
+) ?[:0]const u8 {
     const file: [*:0]const u8 = tfd.tinyfd_openFileDialog(
         title,
         default_path_or_file orelse null,
@@ -63,7 +63,7 @@ pub fn openFileDialogSentinel(
         @ptrCast(filter_patterns.ptr),
         single_filter_description,
         @intFromBool(allow_multiple_selects),
-    );
+    ) orelse return null;
     const len = std.mem.len(file);
     return file[0..len :0];
 }
@@ -74,14 +74,14 @@ pub fn openFileDialog(
     filter_patterns: []const [:0]const u8,
     single_filter_description: [:0]const u8,
     allow_multiple_selects: bool,
-) []const u8 {
+) ?[]const u8 {
     const file: [*:0]const u8 = openFileDialogSentinel(
         title,
         default_path_or_file,
         filter_patterns,
         single_filter_description,
         allow_multiple_selects,
-    );
+    ) orelse return null;
     const len = std.mem.len(file);
     return file[0..len];
 }
@@ -91,14 +91,14 @@ pub fn saveFileDialogSentinel(
     default_path_or_file: ?[:0]const u8,
     filter_patterns: []const [:0]const u8,
     single_filter_description: [:0]const u8,
-) [:0]const u8 {
+) ?[:0]const u8 {
     const file: [*:0]const u8 = tfd.tinyfd_saveFileDialog(
         title,
         default_path_or_file orelse null,
         @intCast(filter_patterns.len),
         @ptrCast(filter_patterns.ptr),
         single_filter_description,
-    );
+    ) orelse return null;
     const len = std.mem.len(file);
     return file[0..len :0];
 }
@@ -108,13 +108,13 @@ pub fn saveFileDialog(
     default_path_or_file: ?[:0]const u8,
     filter_patterns: []const [:0]const u8,
     single_filter_description: [:0]const u8,
-) []const u8 {
+) ?[]const u8 {
     const file: [*:0]const u8 = saveFileDialogSentinel(
         title,
         default_path_or_file,
         filter_patterns,
         single_filter_description,
-    );
+    ) orelse return null;
     const len = std.mem.len(file);
     return file[0..len];
 }

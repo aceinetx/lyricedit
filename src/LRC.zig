@@ -100,7 +100,8 @@ pub fn serialize(self: *LRC, writer: *std.Io.Writer) !void {
 
     inline for (comptime lrc_tags) |tag| {
         const field = @field(self, tag.@"1");
-        try writer.print("[{s}:{s}]\n", .{ tag.@"0", field });
+        const len = std.mem.find(u8, &field, &.{0}).?;
+        try writer.print("[{s}:{s}]\n", .{ tag.@"0", field[0..len] });
     }
 
     for (self.lyrics.items()) |lyric| {
@@ -108,6 +109,7 @@ pub fn serialize(self: *LRC, writer: *std.Io.Writer) !void {
         const minutes: u64 = @divTrunc(total_ms, 60000);
         const seconds: u64 = @mod(@divTrunc(total_ms, 1000), 60);
         const milliseconds: u64 = @divTrunc(@mod(total_ms, 1000), 10);
-        try writer.print("[{d:0>2}:{d:0>2}.{d:0>2}]{s}\n", .{ minutes, seconds, milliseconds, lyric.text });
+        const len = std.mem.find(u8, &lyric.text, &.{0}).?;
+        try writer.print("[{d:0>2}:{d:0>2}.{d:0>2}]{s}\n", .{ minutes, seconds, milliseconds, lyric.text[0..len] });
     }
 }

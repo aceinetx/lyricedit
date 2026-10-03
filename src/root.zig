@@ -89,46 +89,46 @@ pub fn main(init: std.process.Init) void {
                     var tab = &tabs.tabs.items[current];
 
                     if (im.menuItem("Open song")) {
-                        const path = tfd.openFileDialogSentinel(
+                        if (tfd.openFileDialogSentinel(
                             "Open song",
                             null,
                             &.{"*.mp3"},
                             "Audio songs",
                             false,
-                        );
-
-                        if (rl.loadMusicStream(path)) |song| {
-                            tab.setSong(song);
-                        } else |e| {
-                            std.log.err("Error loading song: {}", .{e});
+                        )) |path| {
+                            if (rl.loadMusicStream(path)) |song| {
+                                tab.setSong(song);
+                            } else |e| {
+                                std.log.err("Error loading song: {}", .{e});
+                            }
                         }
                     }
 
                     if (im.menuItem("Open LRC")) {
-                        const path = tfd.openFileDialog(
+                        if (tfd.openFileDialog(
                             "Open lyrics file",
                             null,
                             &.{"*.lrc"},
                             "Lyrics file",
                             false,
-                        );
-
-                        tab.loadLRCFromPath(init.io, path) catch |e| {
-                            std.log.err("Failed to load LRC: {}", .{e});
-                        };
+                        )) |path| {
+                            tab.loadLRCFromPath(init.io, path) catch |e| {
+                                std.log.err("Failed to load LRC: {}", .{e});
+                            };
+                        }
                     }
 
                     if (im.menuItem("Save LRC")) {
-                        const path = tfd.saveFileDialog(
+                        if (tfd.saveFileDialog(
                             "Save lyrics file",
                             null,
-                            &.{"*.mp3"},
+                            &.{"*.lrc"},
                             "Lyrics file",
-                        );
-
-                        tab.saveLRC(init.io, path) catch |e| {
-                            std.log.err("Failed to save LRC: {}", .{e});
-                        };
+                        )) |path| {
+                            tab.saveLRC(init.io, path) catch |e| {
+                                std.log.err("Failed to save LRC: {}", .{e});
+                            };
+                        }
                     }
                 }
             }
