@@ -45,7 +45,7 @@ fn setupImGui(
         // ----------------------------------------------------------
 
         const dcimgui_c = b.addTranslateC(.{
-            .root_source_file = b.path("external/dear_bindings_generated/dcimgui.h"),
+            .root_source_file = b.path("dear_bindings_generated/dcimgui.h"),
             .target = target,
             .optimize = optimize,
         });
@@ -54,7 +54,7 @@ fn setupImGui(
         const dcimgui = dcimgui_c.createModule();
 
         dcimgui.addCSourceFile(.{
-            .file = b.path("external/dear_bindings_generated/dcimgui.cpp"),
+            .file = b.path("dear_bindings_generated/dcimgui.cpp"),
             .language = .cpp,
         });
         dcimgui.addImport("imgui", imgui);
