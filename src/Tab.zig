@@ -4,6 +4,8 @@ const LyricStorage = @import("LyricStorage.zig");
 const rl = @import("raylib");
 const im = @import("imgui");
 
+const Tab = @This();
+
 allocator: std.mem.Allocator,
 title: [255:0]u8 = @splat(0),
 lrc: LRC,
@@ -11,14 +13,20 @@ song: ?rl.Music = null,
 song_paused: bool = false,
 song_volume: f32 = 1.0,
 
-pub fn init(allocator: std.mem.Allocator) @This() {
+pub fn init(allocator: std.mem.Allocator) Tab {
     return .{
         .allocator = allocator,
         .lrc = LRC.init(allocator),
     };
 }
 
-pub fn setSong(self: *@This(), song: ?rl.Music) void {
+pub fn deinit(self: *Tab) void {
+    self.lrc.deinit();
+
+    self.setSong(null);
+}
+
+pub fn setSong(self: *Tab, song: ?rl.Music) void {
     std.log.debug("song set", .{});
     if (self.song != null) {
         self.song.?.unload();
@@ -28,13 +36,44 @@ pub fn setSong(self: *@This(), song: ?rl.Music) void {
     self.song = song;
 }
 
-pub fn deinit(self: *@This()) void {
+pub fn loadLRC(self: *Tab, lrc: LRC) void {
     self.lrc.deinit();
-
-    self.setSong(null);
+    self.lrc = lrc;
 }
 
-pub fn draw(self: *@This()) void {
+pub fn loadLRCFromPath(self: *Tab, io: std.Io, path: []const u8) !void {
+    const file = try std.Io.Dir.openFileAbsolute(io, path, .{});
+    defer file.close(io);
+
+    var buffer: [2048]u8 = undefined;
+    var reader = file.reader(io, &buffer);
+
+    self.loadLRC(try LRC.deserialize(&reader.interface, self.allocator));
+}
+
+pub fn saveLRC(self: *Tab, io: std.Io, path: []const u8) !void {
+    const file = try std.Io.Dir.createFileAbsolute(io, path, .{});
+    defer file.close(io);
+
+    var buffer: [2048]u8 = undefined;
+    var writer = file.writer(io, &buffer);
+
+    try self.lrc.serialize(&writer.interface);
+}
+
+fn uniqueIdT(T: type, arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: T) [*c]const u8 {
+    const s = std.fmt.allocPrintSentinel(arena, "{s}##{s}{}", .{ base, ty, id }, 0) catch return "Internal error: failed to create a unique id";
+    return s.ptr;
+}
+
+fn uniqueId(arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: usize) [*c]const u8 {
+    return uniqueIdT(usize, arena, base, ty, id);
+}
+
+fn draw_top(self: *Tab) void {
+    im.beginGroup();
+    defer im.endGroup();
+
     if (self.song) |song| {
         rl.updateMusicStream(song);
 
@@ -106,13 +145,101 @@ pub fn draw(self: *@This()) void {
         @memcpy(lyric.text[0..10], "Lyric line");
         self.lrc.lyrics.addLine(lyric) catch {};
     }
+}
 
-    // ----------------------------------------------------------
-    for (self.lrc.lyrics.lyrics.items) |*lyric| {
-        _ = im.inputText(blk: {
-            var buf: [255:0]u8 = @splat(0);
-            _ = std.fmt.bufPrint(&buf, "##{}", .{lyric.id}) catch unreachable;
-            break :blk &buf;
-        }, @ptrCast(&lyric.text), lyric.text.len, 0);
+pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
+    im.beginGroup();
+    defer im.endGroup();
+
+    var remove_lyric_index: ?usize = null;
+    var do_sort: bool = false;
+
+    const time_played = if (self.song) |song|
+        rl.getMusicTimePlayed(song)
+    else
+        0;
+
+    if (im.beginTable("lyrics", 3, 0)) {
+        defer im.endTable();
+
+        im.setupColumn(null, im.TableColumnFlags.width_stretch);
+        im.setupColumn(null, 0);
+        im.setupColumn(null, 0);
+
+        var current_lyric_index: ?usize = null;
+        for (0.., self.lrc.lyrics.items()) |i, lyric| {
+            if (time_played >= lyric.time)
+                current_lyric_index = i
+            else
+                break;
+        }
+
+        for (0.., self.lrc.lyrics.lyrics.items) |lyric_index, *lyric| {
+            const is_current = (current_lyric_index != null and current_lyric_index.? == lyric_index);
+
+            im.tableNextRow();
+
+            _ = im.tableNextColumn();
+
+            im.pushItemWidth(-1);
+            if (!is_current) {
+                im.pushStyleColorImVec4(im.Color.text, .{
+                    .x = 0.5,
+                    .y = 0.5,
+                    .z = 0.5,
+                    .w = 0.5,
+                });
+            }
+            _ = im.inputText(
+                Tab.uniqueId(arena, "", "line", lyric.id),
+                @ptrCast(&lyric.text),
+                lyric.text.len,
+                0,
+            );
+            if (!is_current) {
+                im.popStyleColor();
+            }
+            im.popItemWidth();
+
+            _ = im.tableNextColumn();
+
+            im.pushItemWidth(100.0);
+            if (im.dragFloatEx(
+                Tab.uniqueId(arena, "", "time", lyric.id),
+                &lyric.time,
+                0.1,
+                0,
+                -1,
+                null,
+                0,
+            )) {
+                do_sort = true;
+            }
+            im.popItemWidth();
+
+            _ = im.tableNextColumn();
+
+            im.pushItemWidth(100.0);
+            if (im.button(
+                Tab.uniqueId(arena, "remove", "remove_button", lyric.id),
+            )) {
+                remove_lyric_index = lyric_index;
+            }
+            im.popItemWidth();
+        }
     }
+
+    if (remove_lyric_index) |index| {
+        self.lrc.lyrics.removeLineByIndex(index);
+    }
+
+    if (do_sort) {
+        self.lrc.lyrics.sort();
+    }
+}
+
+pub fn draw(self: *Tab, arena: std.mem.Allocator) void {
+    self.draw_top();
+
+    self.draw_lyrics(arena);
 }

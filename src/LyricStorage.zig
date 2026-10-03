@@ -22,9 +22,26 @@ pub fn deinit(self: *LyricStorage) void {
     self.lyrics.deinit(self.allocator);
 }
 
+fn sortPredicate(_: void, a: LyricLine, b: LyricLine) bool {
+    return a.time < b.time;
+}
+
+pub fn sort(self: *LyricStorage) void {
+    std.mem.sort(LyricLine, self.lyrics.items, {}, sortPredicate);
+}
+
 pub fn addLine(self: *LyricStorage, line: LyricLine) !void {
     var new_line = line;
     new_line.id = self.next_lyric_id;
     try self.lyrics.append(self.allocator, new_line);
     self.next_lyric_id += 1;
+    self.sort();
+}
+
+pub fn removeLineByIndex(self: *LyricStorage, index: usize) void {
+    _ = self.lyrics.swapRemove(index);
+}
+
+pub fn items(self: *LyricStorage) []LyricLine {
+    return self.lyrics.items;
 }

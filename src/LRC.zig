@@ -79,6 +79,7 @@ pub fn deserialize(reader: *std.Io.Reader, allocator: std.mem.Allocator) Deseria
             const text = try reader.takeDelimiter('\n') orelse return DeserializeError.InvalidSyntax;
 
             var lyric = LyricStorage.LyricLine{
+                .id = undefined,
                 .time = time,
                 .text = undefined,
             };
@@ -94,13 +95,15 @@ pub fn deserialize(reader: *std.Io.Reader, allocator: std.mem.Allocator) Deseria
     return self;
 }
 
-pub fn serialize(self: LRC, writer: *std.Io.Writer) !void {
+pub fn serialize(self: *LRC, writer: *std.Io.Writer) !void {
+    self.lyrics.sort();
+
     inline for (comptime lrc_tags) |tag| {
         const field = @field(self, tag.@"1");
         try writer.print("[{s}:{s}]\n", .{ tag.@"0", field });
     }
 
-    for (self.lyrics.items) |lyric| {
+    for (self.lyrics.items()) |lyric| {
         const total_ms: u64 = @intFromFloat(lyric.time * 1000 + 0.5);
         const minutes: u64 = @divTrunc(total_ms, 60000);
         const seconds: u64 = @mod(@divTrunc(total_ms, 1000), 60);

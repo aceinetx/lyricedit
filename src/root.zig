@@ -60,7 +60,12 @@ pub fn main(init: std.process.Init) void {
 
     setup.setupImGui();
 
+    var frame_arena = std.heap.ArenaAllocator.init(init.gpa);
+    defer frame_arena.deinit();
+
     while (!rl.windowShouldClose()) {
+        _ = frame_arena.reset(.retain_capacity);
+
         rl.beginDrawing();
         defer rl.endDrawing();
 
@@ -79,10 +84,12 @@ pub fn main(init: std.process.Init) void {
                 }
 
                 if (tabs.current) |current| {
+                    im.separator();
+
                     var tab = &tabs.tabs.items[current];
 
                     if (im.menuItem("Open song")) {
-                        const file = tfd.openFileDialogSentinel(
+                        const path = tfd.openFileDialogSentinel(
                             "Open song",
                             null,
                             &.{"*.mp3"},
@@ -90,13 +97,39 @@ pub fn main(init: std.process.Init) void {
                             false,
                         );
 
-                        if (rl.loadMusicStream(file)) |song| {
+                        if (rl.loadMusicStream(path)) |song| {
                             tab.setSong(song);
                         } else |e| {
                             std.log.err("Error loading song: {}", .{e});
                         }
                     }
-                    if (im.menuItem("Open LRC")) {}
+
+                    if (im.menuItem("Open LRC")) {
+                        const path = tfd.openFileDialog(
+                            "Open lyrics file",
+                            null,
+                            &.{"*.lrc"},
+                            "Lyrics file",
+                            false,
+                        );
+
+                        tab.loadLRCFromPath(init.io, path) catch |e| {
+                            std.log.err("Failed to load LRC: {}", .{e});
+                        };
+                    }
+
+                    if (im.menuItem("Save LRC")) {
+                        const path = tfd.saveFileDialog(
+                            "Save lyrics file",
+                            null,
+                            &.{"*.mp3"},
+                            "Lyrics file",
+                        );
+
+                        tab.saveLRC(init.io, path) catch |e| {
+                            std.log.err("Failed to save LRC: {}", .{e});
+                        };
+                    }
                 }
             }
         }
@@ -119,7 +152,7 @@ pub fn main(init: std.process.Init) void {
             draw_tab_bar();
 
             if (tabs.current) |current| {
-                tabs.tabs.items[current].draw();
+                tabs.tabs.items[current].draw(frame_arena.allocator());
             } else {}
         }
 
