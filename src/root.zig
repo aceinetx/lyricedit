@@ -13,7 +13,7 @@ var quit: bool = false;
 
 // ----------------------------------------------------------
 
-fn draw_tab_bar() void {
+fn drawTabBar() void {
     var remove_tab_id: ?usize = null;
 
     for (0.., tabs.tabs.items) |i, *tab| {
@@ -161,7 +161,7 @@ pub fn main(init: std.process.Init) void {
         )) {
             defer im.end();
 
-            draw_tab_bar();
+            drawTabBar();
 
             if (tabs.current) |current| {
                 tabs.tabs.items[current].draw(frame_arena.allocator());
