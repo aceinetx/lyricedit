@@ -2,3 +2,7 @@
 build/*
 out/*
 .vs/*
+.zig-cache
+zig-out
+zig-pkg
+result
