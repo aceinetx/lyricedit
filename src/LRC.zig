@@ -84,7 +84,6 @@ pub fn deserialize(reader: *std.Io.Reader, allocator: std.mem.Allocator) Deseria
             var lyric = LyricStorage.LyricLine{
                 .id = undefined,
                 .time = time,
-                .text = undefined,
             };
 
             @memcpy(lyric.text[0..text.len], text);
