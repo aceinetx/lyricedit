@@ -7,7 +7,7 @@ const im = @import("imgui");
 const Tab = @This();
 
 allocator: std.mem.Allocator,
-title: [255:0]u8 = @splat(0),
+title: [256]u8 = @splat(0),
 lrc: LRC,
 song: ?rl.Music = null,
 song_paused: bool = false,
@@ -39,6 +39,9 @@ pub fn setSong(self: *Tab, song: ?rl.Music) void {
 pub fn loadLRC(self: *Tab, lrc: LRC) void {
     self.lrc.deinit();
     self.lrc = lrc;
+    if (self.lrc.song_title[0] != 0) {
+        @memcpy(&self.title, &self.lrc.song_title);
+    }
 }
 
 pub fn loadLRCFromPath(self: *Tab, io: std.Io, path: []const u8) !void {
@@ -63,16 +66,7 @@ pub fn saveLRC(self: *Tab, io: std.Io, path: []const u8) !void {
     try writer.flush();
 }
 
-fn uniqueIdT(T: type, arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: T) [*c]const u8 {
-    const s = std.fmt.allocPrintSentinel(arena, "{s}##{s}{}", .{ base, ty, id }, 0) catch return "Internal error: failed to create a unique id";
-    return s.ptr;
-}
-
-fn uniqueId(arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: usize) [*c]const u8 {
-    return uniqueIdT(usize, arena, base, ty, id);
-}
-
-fn draw_top(self: *Tab) void {
+pub fn draw_top(self: *Tab) void {
     im.beginGroup();
     defer im.endGroup();
 
@@ -81,56 +75,74 @@ fn draw_top(self: *Tab) void {
 
         // ----------------------------------------------------------
 
-        im.text("Time");
+        if (im.beginTable("Song controls", 2, 0)) {
+            defer im.endTable();
 
-        im.sameLine();
+            im.setupColumn("Title", 0);
+            im.setupColumn("Controls", im.TableColumnFlags.width_stretch);
 
-        if (im.button(">")) {
-            rl.playMusicStream(song);
+            _ = im.tableNextRow();
+            {
+                _ = im.tableNextColumn();
+
+                im.text("Time");
+
+                _ = im.tableNextColumn();
+                im.beginGroup();
+                {
+                    if (im.button(">")) {
+                        rl.playMusicStream(song);
+                    }
+                    im.sameLine();
+                    if (im.button("#")) {
+                        rl.stopMusicStream(song);
+                    }
+                    im.sameLine();
+                    const pause_button_label = if (self.song_paused)
+                        "|>"
+                    else
+                        "| |";
+
+                    if (im.button(pause_button_label)) {
+                        self.song_paused = !self.song_paused;
+                        if (self.song_paused)
+                            rl.pauseMusicStream(song)
+                        else
+                            rl.resumeMusicStream(song);
+                    }
+
+                    var time =
+                        rl.getMusicTimePlayed(song);
+
+                    const length =
+                        rl.getMusicTimeLength(song);
+
+                    im.sameLine();
+
+                    im.pushItemWidth(-1);
+                    if (im.dragFloatEx("##time", &time, 0.1, 0, length, null, 0)) {
+                        rl.seekMusicStream(song, time);
+                    }
+                    im.popItemWidth();
+                }
+                im.endGroup();
+            }
+
+            _ = im.tableNextRow();
+            {
+                _ = im.tableNextColumn();
+
+                im.text("Volume");
+
+                _ = im.tableNextColumn();
+
+                im.pushItemWidth(-1);
+                if (im.dragFloatEx("##volume", &self.song_volume, 0, 0, 1, null, 0)) {
+                    rl.setMusicVolume(song, self.song_volume);
+                }
+                im.popItemWidth();
+            }
         }
-        im.sameLine();
-        if (im.button("#")) {
-            rl.stopMusicStream(song);
-        }
-        im.sameLine();
-        const pause_button_label = if (self.song_paused)
-            "|>"
-        else
-            "| |";
-
-        if (im.button(pause_button_label)) {
-            self.song_paused = !self.song_paused;
-            if (self.song_paused)
-                rl.pauseMusicStream(song)
-            else
-                rl.resumeMusicStream(song);
-        }
-
-        var time =
-            rl.getMusicTimePlayed(song);
-
-        const length =
-            rl.getMusicTimeLength(song);
-
-        im.sameLine();
-
-        im.pushItemWidth(-1);
-        if (im.dragFloatEx("##time", &time, 0.1, 0, length, null, 0)) {
-            rl.seekMusicStream(song, time);
-        }
-        im.popItemWidth();
-
-        // ----------------------------------------------------------
-
-        im.text("Volume");
-
-        im.sameLine();
-
-        im.pushItemWidth(-1);
-        if (im.dragFloatEx("##volume", &self.song_volume, 0, 0, 1, null, 0)) {
-            rl.setMusicVolume(song, self.song_volume);
-        }
-        im.popItemWidth();
     }
 
     // ----------------------------------------------------------
@@ -186,14 +198,14 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
             im.pushItemWidth(-1);
             if (!is_current) {
                 im.pushStyleColorImVec4(im.Color.text, .{
-                    .x = 0.5,
-                    .y = 0.5,
-                    .z = 0.5,
-                    .w = 0.5,
+                    .x = 0.7,
+                    .y = 0.7,
+                    .z = 0.7,
+                    .w = 0.7,
                 });
             }
             _ = im.inputText(
-                Tab.uniqueId(arena, "", "line", lyric.id),
+                im.uniqueId(arena, "", "line", lyric.id),
                 @ptrCast(&lyric.text),
                 lyric.text.len,
                 0,
@@ -207,7 +219,7 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
 
             im.pushItemWidth(100.0);
             if (im.dragFloatEx(
-                Tab.uniqueId(arena, "", "time", lyric.id),
+                im.uniqueId(arena, "", "time", lyric.id),
                 &lyric.time,
                 0.1,
                 0,
@@ -223,7 +235,7 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
 
             im.pushItemWidth(100.0);
             if (im.button(
-                Tab.uniqueId(arena, "remove", "remove_button", lyric.id),
+                im.uniqueId(arena, "remove", "remove_button", lyric.id),
             )) {
                 remove_lyric_index = lyric_index;
             }
@@ -238,10 +250,4 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
     if (do_sort) {
         self.lrc.lyrics.sort();
     }
-}
-
-pub fn draw(self: *Tab, arena: std.mem.Allocator) void {
-    self.draw_top();
-
-    self.draw_lyrics(arena);
 }

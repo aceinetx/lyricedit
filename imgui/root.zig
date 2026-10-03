@@ -54,6 +54,19 @@ pub const WindowFlags = struct {
     pub const unsaved_document: c_int = 1 << 18;
 };
 
+pub const ChildFlags = struct {
+    pub const none: c_int = dcim.ImGuiChildFlags_None;
+    pub const borders: c_int = dcim.ImGuiChildFlags_Borders;
+    pub const always_use_window_padding: c_int = dcim.ImGuiChildFlags_AlwaysUseWindowPadding;
+    pub const resize_x: c_int = dcim.ImGuiChildFlags_ResizeX;
+    pub const resize_y: c_int = dcim.ImGuiChildFlags_ResizeY;
+    pub const auto_resize_x: c_int = dcim.ImGuiChildFlags_AutoResizeX;
+    pub const auto_resize_y: c_int = dcim.ImGuiChildFlags_AutoResizeY;
+    pub const always_auto_resize: c_int = dcim.ImGuiChildFlags_AlwaysAutoResize;
+    pub const frame_style: c_int = dcim.ImGuiChildFlags_FrameStyle;
+    pub const nav_flattened: c_int = dcim.ImGuiChildFlags_NavFlattened;
+};
+
 pub const Cond = struct {
     pub const none: c_int = 0;
     pub const always: c_int = 1 << 0;
@@ -64,9 +77,13 @@ pub const Cond = struct {
 
 pub const begin = dcim.ImGui_Begin;
 pub const end = dcim.ImGui_End;
+pub const beginChild = dcim.ImGui_BeginChild;
+pub const endChild = dcim.ImGui_End;
 pub const setNextWindowPos = dcim.ImGui_SetNextWindowPos;
 pub const setNextWindowSize = dcim.ImGui_SetNextWindowSize;
 pub const showDemoWindow = dcim.ImGui_ShowDemoWindow;
+pub const getWindowPos = dcim.ImGui_GetWindowPos;
+pub const getWindowSize = dcim.ImGui_GetWindowSize;
 
 pub const beginMainMenuBar = dcim.ImGui_BeginMainMenuBar;
 pub const endMainMenuBar = dcim.ImGui_EndMainMenuBar;
@@ -111,6 +128,7 @@ pub const text = dcim.ImGui_Text;
 pub const button = dcim.ImGui_Button;
 pub const sameLine = dcim.ImGui_SameLine;
 pub const separator = dcim.ImGui_Separator;
+pub const separatorText = dcim.ImGui_SeparatorText;
 
 pub const SliderFlags = struct {
     pub const none: c_int = 0;
@@ -262,3 +280,17 @@ pub const popStyleColor = dcim.ImGui_PopStyleColor;
 pub const pushStyleVar = dcim.ImGui_PushStyleVar;
 pub const pushStyleVarImVec2 = dcim.ImGui_PushStyleVarImVec2;
 pub const popStyleVar = dcim.ImGui_PopStyleVar;
+
+pub fn uniqueIdT(T: type, arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: T) [*c]const u8 {
+    const base_fix = if (std.mem.findAny(u8, base, &.{0})) |i|
+        base[0..i]
+    else
+        base;
+
+    const s = std.fmt.allocPrintSentinel(arena, "{s}##{s}{}", .{ base_fix, ty, id }, 0) catch return "Internal error: failed to create a unique id";
+    return s.ptr;
+}
+
+pub fn uniqueId(arena: std.mem.Allocator, base: []const u8, ty: []const u8, id: usize) [*c]const u8 {
+    return uniqueIdT(usize, arena, base, ty, id);
+}

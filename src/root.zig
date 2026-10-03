@@ -8,25 +8,23 @@ const im = @import("imgui");
 const setup = @import("setup.zig");
 const util = @import("util.zig");
 
+// ----------------------------------------------------------
+
 var tabs: Tabs = undefined;
 var quit: bool = false;
 
 // ----------------------------------------------------------
 
-fn drawTabBar() void {
+fn drawTabBar(arena: std.mem.Allocator) void {
     var remove_tab_id: ?usize = null;
 
     for (0.., tabs.tabs.items) |i, *tab| {
         if (i > 0)
             im.sameLine();
 
-        const clicked_open = im.button(&tab.title);
+        const clicked_open = im.button(im.uniqueId(arena, &tab.title, "tab", i));
         im.sameLine();
-        const clicked_close = im.button(blk: {
-            var label: [16:0]u8 = @splat(0);
-            _ = std.fmt.bufPrint(&label, "x##{}", .{i}) catch unreachable;
-            break :blk &label;
-        });
+        const clicked_close = im.button(im.uniqueId(arena, "x", "close", i));
 
         if (clicked_open) {
             tabs.current = i;
@@ -109,6 +107,29 @@ fn drawMenuBar(io: std.Io) void {
                 quit = true;
             }
         }
+
+        if (tabs.current) |current| {
+            const tab = &tabs.tabs.items[current];
+            if (im.beginMenu("Tab")) {
+                defer im.endMenu();
+
+                _ = im.inputText("Tab title", &tab.title, tab.title.len, 0);
+
+                const fields: [7]struct { []const u8, []u8 } = .{
+                    .{ "Song title", &tab.lrc.song_title },
+                    .{ "Artist", &tab.lrc.artist },
+                    .{ "Album", &tab.lrc.album },
+                    .{ "Author", &tab.lrc.author },
+                    .{ "Lyricist", &tab.lrc.lyricist },
+                    .{ "LRC Author", &tab.lrc.lrc_author },
+                    .{ "Program", &tab.lrc.program },
+                };
+
+                for (fields) |field| {
+                    _ = im.inputText(field.@"0".ptr, field.@"1".ptr, field.@"1".len, 0);
+                }
+            }
+        }
     }
 }
 
@@ -122,7 +143,7 @@ pub fn main(init: std.process.Init) void {
     defer rl.closeWindow();
     rl.initAudioDevice();
 
-    rl.setWindowState(.{ .window_resizable = true });
+    rl.setExitKey(.null);
 
     im.rl.setup(true);
     defer im.rl.shutdown();
@@ -143,7 +164,9 @@ pub fn main(init: std.process.Init) void {
         rl.clearBackground(.black);
 
         im.rl.begin();
+        defer im.rl.end();
 
+        // ----------------------------------------------------------
         drawMenuBar(init.io);
 
         im.setNextWindowPos(.{
@@ -152,22 +175,40 @@ pub fn main(init: std.process.Init) void {
         }, 0);
         im.setNextWindowSize(.{
             .x = io.DisplaySize.x,
-            .y = io.DisplaySize.y - 24,
+            .y = 128,
         }, 0);
         if (im.begin(
             "Editor",
             null,
-            im.WindowFlags.no_title_bar | im.WindowFlags.always_auto_resize | im.WindowFlags.no_resize | im.WindowFlags.no_move,
+            im.WindowFlags.no_title_bar | im.WindowFlags.no_collapse | im.WindowFlags.always_auto_resize | im.WindowFlags.no_resize | im.WindowFlags.no_move | im.WindowFlags.no_collapse,
         )) {
             defer im.end();
 
-            drawTabBar();
+            drawTabBar(frame_arena.allocator());
 
             if (tabs.current) |current| {
-                tabs.tabs.items[current].draw(frame_arena.allocator());
-            } else {}
-        }
+                tabs.tabs.items[current].draw_top();
+            }
 
-        im.rl.end();
+            im.setNextWindowPos(.{
+                .x = im.getWindowPos().x,
+                .y = im.getWindowPos().y + im.getWindowSize().y,
+            }, 0);
+            im.setNextWindowSize(.{
+                .x = io.DisplaySize.x,
+                .y = io.DisplaySize.y - im.getWindowSize().y - im.getWindowPos().y,
+            }, 0);
+            if (im.begin(
+                "Workspace",
+                null,
+                im.WindowFlags.no_title_bar | im.WindowFlags.no_collapse | im.WindowFlags.always_auto_resize | im.WindowFlags.no_resize | im.WindowFlags.no_move | im.WindowFlags.no_collapse,
+            )) {
+                defer im.end();
+
+                if (tabs.current) |current| {
+                    tabs.tabs.items[current].draw_lyrics(frame_arena.allocator());
+                }
+            }
+        }
     }
 }

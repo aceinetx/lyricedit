@@ -29,10 +29,13 @@ program: [256]u8 = @splat(0),
 lyrics: LyricStorage,
 
 pub fn init(allocator: std.mem.Allocator) LRC {
-    return LRC{
+    const program = "rvnfml's lyricedit nightly";
+    var self = LRC{
         .allocator = allocator,
         .lyrics = .init(allocator),
     };
+    @memcpy(self.program[0..program.len], program);
+    return self;
 }
 
 pub fn deinit(self: *LRC) void {
