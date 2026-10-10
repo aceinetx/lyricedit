@@ -6,3 +6,4 @@ out/*
 zig-out
 zig-pkg
 result
+.direnv
