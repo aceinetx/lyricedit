@@ -30,6 +30,33 @@ pub const ImFontConfig_default = ImFontConfig{
 pub const ImFontAtlas_ClearFonts = dcim.ImFontAtlas_ClearFonts;
 pub const ImFontAtlas_AddFontFromMemoryTTF = dcim.ImFontAtlas_AddFontFromMemoryTTF;
 pub const ImFontAtlas_GetGlyphRangesDefault = dcim.ImFontAtlas_GetGlyphRangesDefault;
+pub const ImFontAtlas_getGlyphRangesCyrillic = dcim.ImFontAtlas_GetGlyphRangesCyrillic;
+
+pub const ImFontGlyphRangesBuilder = dcim.ImFontGlyphRangesBuilder;
+pub const ImFontGlyphRangesBuilder_Clear = dcim.ImFontGlyphRangesBuilder_Clear;
+
+pub fn ImFontGlyphRangesBuilder_Init() ImFontGlyphRangesBuilder {
+    var builder = ImFontGlyphRangesBuilder{};
+    ImFontGlyphRangesBuilder_Clear(&builder);
+    return builder;
+}
+
+pub const ImFontGlyphRangesBuilder_AddRanges = dcim.ImFontGlyphRangesBuilder_AddRanges;
+pub const ImFontGlyphRangesBuilder_BuildRanges = dcim.ImFontGlyphRangesBuilder_BuildRanges;
+
+pub const Wchar = dcim.ImWchar;
+pub fn Vector(T: type) type {
+    switch (T) {
+        dcim.ImWchar => {
+            return dcim.ImVector_ImWchar;
+        },
+        else => {
+            @compileError("Vector only accepts ImWChar for now");
+        },
+    }
+}
+
+pub const vectorDestruct = dcim.ImVector_Destruct;
 
 pub const WindowFlags = struct {
     pub const none: c_int = 0;
