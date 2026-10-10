@@ -14,10 +14,10 @@ pub const rl = struct {
 pub const Io = dcim.ImGuiIO;
 pub const getIo = dcim.ImGui_GetIO;
 
-pub const ImFontAtlas = dcim.ImFontAtlas;
-pub const ImFontConfig = dcim.ImFontConfig;
+pub const FontAtlas = dcim.ImFontAtlas;
+pub const FontConfig = dcim.ImFontConfig;
 
-pub const ImFontConfig_default = ImFontConfig{
+pub const FontConfig_default = FontConfig{
     .FontDataOwnedByAtlas = true,
     .OversampleH = 0,
     .OversampleV = 0,
@@ -27,22 +27,22 @@ pub const ImFontConfig_default = ImFontConfig{
     .EllipsisChar = 0,
 };
 
-pub const ImFontAtlas_ClearFonts = dcim.ImFontAtlas_ClearFonts;
-pub const ImFontAtlas_AddFontFromMemoryTTF = dcim.ImFontAtlas_AddFontFromMemoryTTF;
-pub const ImFontAtlas_GetGlyphRangesDefault = dcim.ImFontAtlas_GetGlyphRangesDefault;
-pub const ImFontAtlas_getGlyphRangesCyrillic = dcim.ImFontAtlas_GetGlyphRangesCyrillic;
+pub const FontAtlas_ClearFonts = dcim.ImFontAtlas_ClearFonts;
+pub const FontAtlas_AddFontFromMemoryTTF = dcim.ImFontAtlas_AddFontFromMemoryTTF;
+pub const FontAtlas_GetGlyphRangesDefault = dcim.ImFontAtlas_GetGlyphRangesDefault;
+pub const FontAtlas_getGlyphRangesCyrillic = dcim.ImFontAtlas_GetGlyphRangesCyrillic;
 
-pub const ImFontGlyphRangesBuilder = dcim.ImFontGlyphRangesBuilder;
-pub const ImFontGlyphRangesBuilder_Clear = dcim.ImFontGlyphRangesBuilder_Clear;
+pub const FontGlyphRangesBuilder = dcim.ImFontGlyphRangesBuilder;
+pub const FontGlyphRangesBuilder_Clear = dcim.ImFontGlyphRangesBuilder_Clear;
 
-pub fn ImFontGlyphRangesBuilder_Init() ImFontGlyphRangesBuilder {
-    var builder = ImFontGlyphRangesBuilder{};
-    ImFontGlyphRangesBuilder_Clear(&builder);
+pub fn FontGlyphRangesBuilder_Init() FontGlyphRangesBuilder {
+    var builder = FontGlyphRangesBuilder{};
+    FontGlyphRangesBuilder_Clear(&builder);
     return builder;
 }
 
-pub const ImFontGlyphRangesBuilder_AddRanges = dcim.ImFontGlyphRangesBuilder_AddRanges;
-pub const ImFontGlyphRangesBuilder_BuildRanges = dcim.ImFontGlyphRangesBuilder_BuildRanges;
+pub const FontGlyphRangesBuilder_AddRanges = dcim.ImFontGlyphRangesBuilder_AddRanges;
+pub const FontGlyphRangesBuilder_BuildRanges = dcim.ImFontGlyphRangesBuilder_BuildRanges;
 
 pub const Wchar = dcim.ImWchar;
 pub fn Vector(T: type) type {
