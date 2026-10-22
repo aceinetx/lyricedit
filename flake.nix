@@ -61,6 +61,18 @@
 
           src = self;
 
+          desktopItem = pkgs.makeDesktopItem {
+            name = "lyricedit";
+            desktopName = "LyricEdit";
+            comment = "";
+            exec = "lyricedit";
+            terminal = false;
+            type = "Application";
+            categories = [
+              "Audio"
+            ];
+          };
+
           libPaths = pkgs.lib.makeLibraryPath [
             pkgs.libglvnd
             pkgs.alsa-lib
@@ -96,6 +108,9 @@
 
             mv "$out/bin/lyricedit" "$out/bin/lyricedit-real"
             makeWrapper "$out/bin/lyricedit-real" "$out/bin/lyricedit" --set LD_LIBRARY_PATH "${libPaths}"
+
+            mkdir -p "$out/share/applications"
+            cp "${desktopItem}/share/applications/lyricedit.desktop" "$out/share/applications"
           '';
 
           installPhase = ":";
