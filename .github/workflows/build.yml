@@ -36,7 +36,9 @@ jobs:
 
         pip install ply
     - name: build
-      run: zig/zig build -Doptimize=ReleaseSmall
+      run: |
+        zig/zig build -Doptimize=ReleaseSmall
+        zig/zig build -Doptimize=ReleaseSmall -Dtarget=x86_64-windows-gnu
 
   publish:
     name: Publish
@@ -63,3 +65,4 @@ jobs:
             Automated nightly release for commit ${{ github.sha }}.
           files: |
             zig-out/bin/lyricedit
+            zig-out/bin/lyricedit.exe
