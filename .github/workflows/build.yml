@@ -43,13 +43,13 @@ jobs:
     - name: Upload artifact 1
       uses: actions/upload-artifact@v4
       with:
-        name: artifact
+        name: linux
         path: zig-out/bin/lyricedit
 
     - name: Upload artifact 2
       uses: actions/upload-artifact@v4
       with:
-        name: artifact
+        name: windows
         path: zig-out/bin/lyricedit.exe
 
   publish:
@@ -61,10 +61,15 @@ jobs:
       - name: Authenticate GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
-      - name: Download artifact
+      - name: Download artifact 1
         uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: linux
+
+      - name: Download artifact 2
+        uses: actions/download-artifact@v4
+        with:
+          name: windows
 
       - name: Update Nightly Release
         uses: andelf/nightly-release@main
@@ -76,5 +81,5 @@ jobs:
           body: |
             Automated nightly release for commit ${{ github.sha }}.
           files: |
-            zig-out/bin/lyricedit
-            zig-out/bin/lyricedit.exe
+            lyricedit
+            lyricedit.exe
