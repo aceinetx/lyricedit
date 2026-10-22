@@ -80,7 +80,6 @@
 
           buildInputs = with pkgs; [
             makeWrapper
-            python3
             zig
             libx11
             libxrandr
@@ -88,6 +87,8 @@
             libxcursor
             libxi
             libGL
+            python314
+            python314Packages.ply
           ];
 
           configurePhase = ''
@@ -126,15 +127,14 @@
             libxi
             libGL
             zon2nix
+            python314
+            python314Packages.ply
           ];
+
           env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
             pkgs.libglvnd
             pkgs.alsa-lib
           ];
-
-          #shellHook = ''
-          #  export LD_LIBRARY_PATH="''${LD_LIBRARY_PATH}''${LD_LIBRARY_PATH:+:}${pkgs.libglvnd}/lib"
-          #'';
         };
       }
     );

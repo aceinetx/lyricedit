@@ -1,5 +1,6 @@
 const std = @import("std");
 
+// #region raylib
 fn addRaylibIncludePaths(
     b: *std.Build,
     raylib: *std.Build.Module,
@@ -14,13 +15,30 @@ fn addRaylibIncludePaths(
         }
     }
 }
+// #endregion
+
+// #region imgui
+const ImGui = struct {
+    module: *std.Build.Module,
+    step: *std.Build.Step,
+};
 
 fn setupImGui(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
     raylib: *std.Build.Module,
-) *std.Build.Module {
+) ImGui {
+    const dear_bindings = b.addSystemCommand(&.{
+        "python",
+        "external/dear_bindings/dear_bindings.py",
+        "-o",
+    });
+    const dear_bindings_dir = dear_bindings.addOutputDirectoryArg("dear_bindings_generated/dcimgui").dirname();
+    dear_bindings.addFileArg(b.path("external/imgui/imgui.h"));
+
+    // ----------------------------------------------------------
+
     const imgui_c = blk: {
         const imgui = b.createModule(.{
             .target = target,
@@ -45,7 +63,7 @@ fn setupImGui(
         // ----------------------------------------------------------
 
         const dcimgui_c = b.addTranslateC(.{
-            .root_source_file = b.path("dear_bindings_generated/dcimgui.h"),
+            .root_source_file = dear_bindings_dir.path(b, "dcimgui.h"),
             .target = target,
             .optimize = optimize,
         });
@@ -54,7 +72,7 @@ fn setupImGui(
         const dcimgui = dcimgui_c.createModule();
 
         dcimgui.addCSourceFile(.{
-            .file = b.path("dear_bindings_generated/dcimgui.cpp"),
+            .file = dear_bindings_dir.path(b, "dcimgui.cpp"),
             .language = .cpp,
         });
         dcimgui.addImport("imgui", imgui);
@@ -96,9 +114,14 @@ fn setupImGui(
         },
     });
 
-    return imgui;
+    return .{
+        .module = imgui,
+        .step = &dear_bindings.step,
+    };
 }
+// #endregion
 
+// #region tinyfiledialogs
 fn setupTinyFileDialogs(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
@@ -129,6 +152,7 @@ fn setupTinyFileDialogs(
 
     return tinyfiledialogs;
 }
+// #endregion
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
@@ -166,7 +190,7 @@ pub fn build(b: *std.Build) void {
             .imports = &.{
                 .{ .name = "raylib", .module = raylib },
                 .{ .name = "tinyfiledialogs", .module = tinyfiledialogs },
-                .{ .name = "imgui", .module = imgui },
+                .{ .name = "imgui", .module = imgui.module },
             },
         }),
     });
@@ -176,6 +200,8 @@ pub fn build(b: *std.Build) void {
         exe.root_module.linkSystemLibrary("comdlg32", .{});
         exe.root_module.linkSystemLibrary("ole32", .{});
     }
+
+    exe.step.dependOn(imgui.step);
 
     b.installArtifact(exe);
 
