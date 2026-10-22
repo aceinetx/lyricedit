@@ -1,0 +1,65 @@
+name: Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: install build dependencies
+      run: |
+        sudo apt update
+        sudo apt-get install -y --no-install-recommends \
+          libgl-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxi-dev \
+          libxcursor-dev \
+          python3 \
+          python3-pip \
+          python-is-python3
+
+        wget https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
+        tar -xvf zig-x86_64-linux-0.16.0.tar.xz
+        mv zig-x86_64-linux-0.16.0 zig
+        zig/zig version
+
+        pip install ply
+    - name: build
+      run: zig/zig build -Doptimize=ReleaseSmall
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact
+
+      - name: Update Nightly Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly-release
+          name: 'Nightly Release'
+          body: |
+            Automated nightly release for commit ${{ github.sha }}.
+          files: |
+            zig-out/bin/lyricedit
