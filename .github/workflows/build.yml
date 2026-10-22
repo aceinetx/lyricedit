@@ -40,6 +40,18 @@ jobs:
         zig/zig build -Doptimize=ReleaseSmall
         zig/zig build -Doptimize=ReleaseSmall -Dtarget=x86_64-windows-gnu
 
+    - name: Upload artifact 1
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact
+        path: zig-out/bin/lyricedit
+
+    - name: Upload artifact 2
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact
+        path: zig-out/bin/lyricedit.exe
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
