@@ -1,5 +1,6 @@
 const std = @import("std");
 const LRC = @import("LRC.zig");
+const util = @import("util.zig");
 const LyricStorage = @import("LyricStorage.zig");
 const rl = @import("raylib");
 const im = @import("imgui");
@@ -10,7 +11,6 @@ allocator: std.mem.Allocator,
 title: [256]u8 = @splat(0),
 lrc: LRC,
 song: ?rl.Music = null,
-song_paused: bool = false,
 song_volume: f32 = 1.0,
 
 pub fn init(allocator: std.mem.Allocator) Tab {
@@ -98,14 +98,16 @@ pub fn draw_top(self: *Tab) void {
                         rl.stopMusicStream(song);
                     }
                     im.sameLine();
-                    const pause_button_label = if (self.song_paused)
+
+                    const song_paused = util.rlIsAudioBufferPaused(song.stream.buffer);
+
+                    const pause_button_label = if (song_paused)
                         "|>"
                     else
                         "| |";
 
                     if (im.button(pause_button_label)) {
-                        self.song_paused = !self.song_paused;
-                        if (self.song_paused)
+                        if (!song_paused)
                             rl.pauseMusicStream(song)
                         else
                             rl.resumeMusicStream(song);

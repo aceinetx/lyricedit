@@ -34,7 +34,7 @@ fn setupImGui(
         "external/dear_bindings/dear_bindings.py",
         "-o",
     });
-    const dear_bindings_dir = dear_bindings.addOutputDirectoryArg("dear_bindings_generated/dcimgui").dirname();
+    const dear_bindings_dir = dear_bindings.addOutputDirectoryArg("dcimgui").dirname();
     dear_bindings.addFileArg(b.path("external/imgui/imgui.h"));
 
     // ----------------------------------------------------------
