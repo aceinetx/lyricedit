@@ -4,23 +4,22 @@
   linkFarm,
   fetchzip,
   fetchgit,
-  ...
 }:
 
 linkFarm "zig-packages" [
   {
-    name = "N-V-__8AAHvybwBw1kyBGn0BW_s1RqIpycNjLf_XbE-fpLUF";
+    name = "N-V-__8AAHfAmAAiGh5pd2tF_LRtm1Wc_NbGUXbkBZ1riYkj";
     path = fetchgit {
       url = "https://github.com/raysan5/raygui";
-      rev = "3b2855842ab578a034f827c38cf8f62c042fc983";
-      hash = "sha256-+ZggtQDieitiqNzez0UF55OWd/ijZOBoeV/tBogLzqk=";
+      rev = "1abccb3a5303d041dc14404b7dd874fa665dd4af";
+      hash = "sha256-wcYZKslu4IndEKF1PpDlRfo+6JXAWctVsOWU4SMvVPc=";
     };
   }
   {
     name = "N-V-__8AAJl1DwBezhYo_VE6f53mPVm00R-Fk28NPW7P14EQ";
     path = fetchgit {
       url = "https://github.com/emscripten-core/emsdk";
-      rev = "4.0.9";
+      tag = "4.0.9";
       hash = "sha256-ftUQjgMio8G3aHIux9ZckJFYq1Vdfkv5w3830XO1Ris=";
     };
   }
@@ -32,35 +31,44 @@ linkFarm "zig-packages" [
     };
   }
   {
-    name = "raylib-6.0.0-whq8uCSwLgWWeF3ec3dbG6Rr36SLFL-s2WJ1Q_2E22Bb";
+    name = "N-V-__8AAPPCmABYkTrLoRGTR6whFQP1bvg7p5vpLsKIcn4G";
+    path = fetchgit {
+      url = "https://github.com/raysan5/raygui";
+      rev = "3f81e2bd02bf08dcd9d350e8e8b3cf58044d6877";
+      hash = "sha256-AE5dCzxUqvc87wFEaUh/V+cr1pVbUpjSALpzLFuIIy0=";
+    };
+  }
+  {
+    name = "aro-0.0.0-JSD1QvCRNwC2O1Jkop9TO6sXb1U1vhrH8FnYK1VdEMKn";
+    path = fetchgit {
+      url = "https://codeberg.org/ziglang/arocc";
+      rev = "630d99ed60fe61ccabe721f1af60881f8b2adde3";
+      hash = "sha256-lG+T8svTkI3pHJrgTNccZS5sU2pMOMTs2gZ8qbTH5dQ=";
+    };
+  }
+  {
+    name = "raylib-6.0.0-whq8uDpYOAVcH_KyOZ0--nYF1dEsjdQ5r4e9R24UkQOi";
     path = fetchgit {
       url = "https://github.com/raysan5/raylib";
-      rev = "6.0";
-      hash = "sha256-8+6MDTMc7Spix4ndAUzp51Q5iWcl7pQmyXuV2RutnOk=";
+      tag = "6.2";
+      hash = "sha256-z885D8MdNdx/sOG+xMfk2gwZfaIrgMnbW7Xx1Ee4f6M=";
     };
   }
   {
-    name = "raylib_zig-6.0.0-KE8RECZ8BQDm-txuospkpZHbJ6DNpacUF7D88RWQ_qAe";
+    name = "raylib_zig-6.2.0-KE8RELGmBQDX1v1DqBN57pNxJ-b-MIa1S-M7NXT9Eplr";
     path = fetchgit {
       url = "https://github.com/raylib-zig/raylib-zig";
-      rev = "8758f4cd3a5ae0df6941c4715257223d34c5ad3e";
-      hash = "sha256-6Nz8SPLbBmm1Hd58ozqRgBmJAiYor0Fhh9jK+tZz5VU=";
+      rev = "28bbe30112f605da918db00eff53a75ce1aa9180";
+      hash = "sha256-2/6svDLiQxewPN0SLy8ULceeivh5JTy2sRYgLIcHrX8=";
     };
   }
   {
-    name = "zemscripten-0.2.0-dev-sRlDqApRAACspTbAZnuNKWIzfWzSYgYkb2nWAXZ-tqqt";
+    name = "translate_c-2.0.2-Q_BUWvBNBwBgPKQJPblip6M7AHNK_IPNPmyv4rSIQMQc";
     path = fetchgit {
-      url = "https://github.com/zig-gamedev/zemscripten";
-      rev = "3fa4b778852226c7346bdcc3c1486e875a9a6d02";
-      hash = "sha256-g/sHkcp+zdJEEAaooCS4joPGSij57RVKoLCcef0aRIE=";
-    };
-  }
-  {
-    name = "zemscripten-0.2.0-dev-sRlDqEtQAAB_1tPdqJsxQIqXxvvklcFu6VN5p6ANy8hw";
-    path = fetchgit {
-      url = "https://github.com/zig-gamedev/zemscripten";
-      rev = "70bdafc473be2131445bb6fd977fe7cb92fd0f5f";
-      hash = "sha256-ZSFoFAS/P7WyvWDOAy3OWNcLer314Ij70oHqrqZQudI=";
+      url = "https://codeberg.org/ziglang/translate-c";
+      # rev = "c11030012dc325d446474d17b78c242fd1d622ec";
+      tag = "2.0.2";
+      hash = "sha256-Rg+ivGHlmTjTlLrfKrbqjEF0xalcIItUfeUaLH/UgTM=";
     };
   }
 ]
