@@ -29,9 +29,9 @@ jobs:
           python3-pip \
           python-is-python3
 
-        wget https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
-        tar -xvf zig-x86_64-linux-0.16.0.tar.xz
-        mv zig-x86_64-linux-0.16.0 zig
+        wget https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz
+        tar -xvf zig-x86_64-linux-0.17.0.tar.xz
+        mv zig-x86_64-linux-0.17.0 zig
         zig/zig version
 
         pip install ply
