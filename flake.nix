@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -10,12 +11,14 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       flake-utils,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
 
         zigDeps = pkgs.callPackage ./build.zig.zon.nix { };
 
@@ -78,17 +81,17 @@
             pkgs.alsa-lib
           ];
 
-          buildInputs = with pkgs; [
-            makeWrapper
-            zig
-            libx11
-            libxrandr
-            libxinerama
-            libxcursor
-            libxi
-            libGL
-            python314
-            python314Packages.ply
+          buildInputs = [
+            pkgs.makeWrapper
+            pkgs-unstable.zig_0_17
+            pkgs.libx11
+            pkgs.libxrandr
+            pkgs.libxinerama
+            pkgs.libxcursor
+            pkgs.libxi
+            pkgs.libGL
+            pkgs.python314
+            pkgs.python314Packages.ply
           ];
 
           configurePhase = ''
@@ -118,17 +121,17 @@
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            zig
-            libx11
-            libxrandr
-            libxinerama
-            libxcursor
-            libxi
-            libGL
-            zon2nix
-            python314
-            python314Packages.ply
+          buildInputs = [
+            pkgs-unstable.zig_0_17
+            pkgs.libx11
+            pkgs.libxrandr
+            pkgs.libxinerama
+            pkgs.libxcursor
+            pkgs.libxi
+            pkgs.libGL
+            pkgs.zon2nix
+            pkgs.python314
+            pkgs.python314Packages.ply
           ];
 
           env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [

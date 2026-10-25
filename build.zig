@@ -1,4 +1,5 @@
 const std = @import("std");
+const Translator = @import("translate_c").Translator;
 
 // #region raylib
 fn addRaylibIncludePaths(
@@ -25,6 +26,7 @@ const ImGui = struct {
 
 fn setupImGui(
     b: *std.Build,
+    translate_c: *std.Build.Dependency,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
     raylib: *std.Build.Module,
@@ -62,14 +64,16 @@ fn setupImGui(
 
         // ----------------------------------------------------------
 
-        const dcimgui_c = b.addTranslateC(.{
-            .root_source_file = dear_bindings_dir.path(b, "dcimgui.h"),
+        const dcimgui_c = Translator.init(translate_c, .{
+            .c_source_file = dear_bindings_dir.path(b, "dcimgui.h"),
             .target = target,
             .optimize = optimize,
+            .default_init = true,
         });
+
         dcimgui_c.addIncludePath(b.path("external/imgui"));
 
-        const dcimgui = dcimgui_c.createModule();
+        const dcimgui = dcimgui_c.mod;
 
         dcimgui.addCSourceFile(.{
             .file = dear_bindings_dir.path(b, "dcimgui.cpp"),
@@ -82,15 +86,15 @@ fn setupImGui(
     };
 
     const rlImGui = blk: {
-        const rlImGui_c = b.addTranslateC(.{
-            .root_source_file = b.path("external/rlImGui/rlImGui.h"),
+        const rlImGui_c = Translator.init(translate_c, .{
+            .c_source_file = b.path("external/rlImGui/rlImGui.h"),
             .target = target,
             .optimize = optimize,
         });
         rlImGui_c.addIncludePath(b.path("external/imgui"));
         addRaylibIncludePaths(b, raylib, rlImGui_c);
 
-        const rlImGui = rlImGui_c.createModule();
+        const rlImGui = rlImGui_c.mod;
         rlImGui.link_libcpp = true;
 
         rlImGui.addImport("raylib", raylib);
@@ -124,6 +128,7 @@ fn setupImGui(
 // #region tinyfiledialogs
 fn setupTinyFileDialogs(
     b: *std.Build,
+    translate_c: *std.Build.Dependency,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
 ) *std.Build.Module {
@@ -135,13 +140,13 @@ fn setupTinyFileDialogs(
             .{
                 .name = "tinyfiledialogs",
                 .module = blk: {
-                    const c = b.addTranslateC(.{
-                        .root_source_file = b.path("tinyfiledialogs/tinyfiledialogs_fix.h"),
+                    const c = Translator.init(translate_c, .{
+                        .c_source_file = b.path("tinyfiledialogs/tinyfiledialogs_fix.h"),
                         .target = target,
                         .optimize = optimize,
                     });
                     c.addIncludePath(b.path("external/libtinyfiledialogs"));
-                    break :blk c.createModule();
+                    break :blk c.mod;
                 },
             },
         },
@@ -160,6 +165,10 @@ pub fn build(b: *std.Build) void {
 
     // ----------------------------------------------------------
 
+    const translate_c = b.dependency("translate_c", .{});
+
+    // ----------------------------------------------------------
+
     const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
         .optimize = optimize,
@@ -171,18 +180,16 @@ pub fn build(b: *std.Build) void {
 
     // ----------------------------------------------------------
 
-    const imgui = setupImGui(b, target, optimize, raylib);
+    const imgui = setupImGui(b, translate_c, target, optimize, raylib);
 
     // ----------------------------------------------------------
 
-    const tinyfiledialogs = setupTinyFileDialogs(b, target, optimize);
+    const tinyfiledialogs = setupTinyFileDialogs(b, translate_c, target, optimize);
 
     // ----------------------------------------------------------
 
     const exe = b.addExecutable(.{
         .name = "lyricedit",
-        .use_lld = true,
-        .use_llvm = true,
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/root.zig"),
             .target = target,
@@ -214,7 +221,5 @@ pub fn build(b: *std.Build) void {
 
     run_cmd.step.dependOn(b.getInstallStep());
 
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
+    run_cmd.addPassthruArgs();
 }
