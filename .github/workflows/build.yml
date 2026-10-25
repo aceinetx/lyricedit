@@ -15,6 +15,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: recursive
+
     - name: install build dependencies
       run: |
         ./.github/workflows/build_install_deps_1.sh & \
@@ -22,7 +23,7 @@ jobs:
 
     - name: build
       run: |
-        zig/zig build -Doptimize=ReleaseSmall
+        zig/zig build -Doptimize=ReleaseSmall & \
         zig/zig build -Doptimize=ReleaseSmall -Dtarget=x86_64-windows-gnu
 
     - name: Upload artifact 1
