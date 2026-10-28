@@ -175,10 +175,11 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
     else
         0;
 
-    if (im.beginTable("lyrics", 4, 0)) {
+    if (im.beginTable("lyrics", 5, 0)) {
         defer im.endTable();
 
         im.setupColumn(null, im.TableColumnFlags.width_stretch);
+        im.setupColumn(null, 0);
         im.setupColumn(null, 0);
         im.setupColumn(null, 0);
         im.setupColumn(null, 0);
@@ -244,6 +245,16 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
             )) {
                 if (self.song) |song|
                     rl.seekMusicStream(song, lyric.time);
+            }
+            im.popItemWidth();
+
+            _ = im.tableNextColumn();
+
+            im.pushItemWidth(100.0);
+            if (im.button(
+                im.uniqueId(arena, "set", "set_button", lyric.id),
+            )) {
+                lyric.time = rl.getMusicTimePlayed(self.song.?);
             }
             im.popItemWidth();
 

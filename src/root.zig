@@ -167,6 +167,7 @@ pub fn main(init: std.process.Init) void {
         defer im.rl.end();
 
         // ----------------------------------------------------------
+
         drawMenuBar(init.io);
 
         im.setNextWindowPos(.{
