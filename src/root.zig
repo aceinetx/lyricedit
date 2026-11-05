@@ -176,7 +176,7 @@ pub fn main(init: std.process.Init) void {
         }, 0);
         im.setNextWindowSize(.{
             .x = io.DisplaySize.x,
-            .y = 128,
+            .y = 144,
         }, 0);
         if (im.begin(
             "Editor",
