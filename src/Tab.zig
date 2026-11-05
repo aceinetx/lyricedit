@@ -255,6 +255,7 @@ pub fn draw_lyrics(self: *Tab, arena: std.mem.Allocator) void {
                 im.uniqueId(arena, "set", "set_button", lyric.id),
             )) {
                 lyric.time = rl.getMusicTimePlayed(self.song.?);
+                do_sort = true;
             }
             im.popItemWidth();
 
