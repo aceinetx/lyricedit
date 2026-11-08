@@ -84,6 +84,7 @@
           buildInputs = [
             pkgs.makeWrapper
             pkgs-unstable.zig_0_17
+            pkgs-unstable.zls
             pkgs.libx11
             pkgs.libxrandr
             pkgs.libxinerama
