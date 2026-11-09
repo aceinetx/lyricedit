@@ -1,12 +1,12 @@
 [submodule "external/rlImGui"]
-	path = external/rlImGui
+	path = imgui/rlImGui
 	url = https://github.com/raylib-extras/rlImGui
 [submodule "external/imgui"]
-	path = external/imgui
+	path = imgui/imgui
 	url = https://github.com/ocornut/imgui
 [submodule "external/dear_bindings"]
-	path = external/dear_bindings
+	path = imgui/dear_bindings
 	url = https://github.com/dearimgui/dear_bindings/
 [submodule "external/libtinyfiledialogs"]
-	path = external/libtinyfiledialogs
+	path = tinyfiledialogs/tinyfiledialogs
 	url = https://git.code.sf.net/p/tinyfiledialogs/code

@@ -1,15 +1,7 @@
 pub const dcim = @import("imgui");
 const std = @import("std");
 
-pub const rl = struct {
-    const rlim = @import("rlImGui");
-
-    pub const setup = rlim.rlImGuiSetup;
-    pub const shutdown = rlim.rlImGuiShutdown;
-
-    pub const begin = rlim.rlImGuiBegin;
-    pub const end = rlim.rlImGuiEnd;
-};
+pub const rl = @import("rl.zig");
 
 pub const Io = dcim.ImGuiIO;
 pub const getIo = dcim.ImGui_GetIO;

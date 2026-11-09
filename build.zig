@@ -33,11 +33,11 @@ fn setupImGui(
 ) ImGui {
     const dear_bindings = b.addSystemCommand(&.{
         "python",
-        "external/dear_bindings/dear_bindings.py",
+        "imgui/dear_bindings/dear_bindings.py",
         "-o",
     });
     const dear_bindings_dir = dear_bindings.addOutputDirectoryArg("dcimgui").dirname();
-    dear_bindings.addFileArg(b.path("external/imgui/imgui.h"));
+    dear_bindings.addFileArg(b.path("imgui/imgui/imgui.h"));
 
     // ----------------------------------------------------------
 
@@ -48,13 +48,13 @@ fn setupImGui(
             .link_libcpp = true,
         });
 
-        imgui.addIncludePath(b.path("external/imgui"));
+        imgui.addIncludePath(b.path("imgui/imgui"));
         inline for ([_]std.Build.LazyPath{
-            b.path("external/imgui/imgui.cpp"),
-            b.path("external/imgui/imgui_demo.cpp"),
-            b.path("external/imgui/imgui_widgets.cpp"),
-            b.path("external/imgui/imgui_draw.cpp"),
-            b.path("external/imgui/imgui_tables.cpp"),
+            b.path("imgui/imgui/imgui.cpp"),
+            b.path("imgui/imgui/imgui_demo.cpp"),
+            b.path("imgui/imgui/imgui_widgets.cpp"),
+            b.path("imgui/imgui/imgui_draw.cpp"),
+            b.path("imgui/imgui/imgui_tables.cpp"),
         }) |file| {
             imgui.addCSourceFile(.{
                 .file = file,
@@ -71,7 +71,7 @@ fn setupImGui(
             .default_init = true,
         });
 
-        dcimgui_c.addIncludePath(b.path("external/imgui"));
+        dcimgui_c.addIncludePath(b.path("imgui/imgui"));
 
         const dcimgui = dcimgui_c.mod;
 
@@ -80,18 +80,18 @@ fn setupImGui(
             .language = .cpp,
         });
         dcimgui.addImport("imgui", imgui);
-        dcimgui.addIncludePath(b.path("external/imgui"));
+        dcimgui.addIncludePath(b.path("imgui/imgui"));
 
         break :blk dcimgui;
     };
 
     const rlImGui = blk: {
         const rlImGui_c = Translator.init(translate_c, .{
-            .c_source_file = b.path("external/rlImGui/rlImGui.h"),
+            .c_source_file = b.path("imgui/rlImGui/rlImGui.h"),
             .target = target,
             .optimize = optimize,
         });
-        rlImGui_c.addIncludePath(b.path("external/imgui"));
+        rlImGui_c.addIncludePath(b.path("imgui/imgui"));
         addRaylibIncludePaths(b, raylib, rlImGui_c);
 
         const rlImGui = rlImGui_c.mod;
@@ -99,10 +99,10 @@ fn setupImGui(
 
         rlImGui.addImport("raylib", raylib);
         addRaylibIncludePaths(b, raylib, rlImGui);
-        rlImGui.addIncludePath(b.path("external/imgui"));
+        rlImGui.addIncludePath(b.path("imgui/imgui"));
 
         rlImGui.addCSourceFile(.{
-            .file = b.path("external/rlImGui/rlImGui.cpp"),
+            .file = b.path("imgui/rlImGui/rlImGui.cpp"),
             .language = .cpp,
         });
         break :blk rlImGui;
@@ -145,14 +145,14 @@ fn setupTinyFileDialogs(
                         .target = target,
                         .optimize = optimize,
                     });
-                    c.addIncludePath(b.path("external/libtinyfiledialogs"));
+                    c.addIncludePath(b.path("tinyfiledialogs/tinyfiledialogs"));
                     break :blk c.mod;
                 },
             },
         },
     });
 
-    tinyfiledialogs.addIncludePath(b.path("external/libtinyfiledialogs"));
+    tinyfiledialogs.addIncludePath(b.path("tinyfiledialogs/tinyfiledialogs"));
     tinyfiledialogs.addCSourceFile(.{ .file = b.path("tinyfiledialogs/tinyfiledialogs_fix.c") });
 
     return tinyfiledialogs;
