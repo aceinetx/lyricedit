@@ -1,5 +1,13 @@
 root = true
 
-[*.nix, *.yml, *.sh]
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+
+[*.nix]
+indent_style = space
+indent_size = 2
+
+[*.yml, *.sh]
 indent_style = space
 indent_size = 4

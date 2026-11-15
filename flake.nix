@@ -93,11 +93,15 @@
             pkgs.libGL
             pkgs.python314
             pkgs.python314Packages.ply
+            pkgs.tree
+            pkgs.file
           ];
 
           configurePhase = ''
-            rm -rf external
-            ln -sf ${submodulesDeps} external
+            ln -sf ${submodulesDeps}/libtinyfiledialogs tinyfiledialogs/tinyfiledialogs
+            ln -sf ${submodulesDeps}/dear_bindings imgui/dear_bindings
+            ln -sf ${submodulesDeps}/imgui imgui/imgui
+            ln -sf ${submodulesDeps}/rlImGui imgui/rlImGui
           '';
 
           buildPhase = ''
