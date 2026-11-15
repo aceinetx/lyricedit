@@ -98,9 +98,13 @@
           ];
 
           configurePhase = ''
+            rm -rf tinyfiledialogs/tinyfiledialogs
             ln -sf ${submodulesDeps}/libtinyfiledialogs tinyfiledialogs/tinyfiledialogs
+            rm -rf imgui/dear_bindings
             ln -sf ${submodulesDeps}/dear_bindings imgui/dear_bindings
+            rm -rf imgui/imgui
             ln -sf ${submodulesDeps}/imgui imgui/imgui
+            rm -rf imgui/rlImGui
             ln -sf ${submodulesDeps}/rlImGui imgui/rlImGui
           '';
 
