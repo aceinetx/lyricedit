@@ -135,6 +135,21 @@ fn drawMenuBar(io: std.Io) void {
 
 // ----------------------------------------------------------
 
+pub fn parse_args(io: std.Io, args: []const [:0]const u8) !void {
+    for (args) |arg| {
+        if (std.mem.endsWith(u8, arg, ".mp3")) {
+            try tabs.addTab();
+            const tab = &tabs.tabs.items[tabs.current.?];
+            const song = try rl.loadMusicStream(arg);
+            tab.setSong(song);
+        }
+        if (std.mem.endsWith(u8, arg, ".lrc")) {
+            const tab = &tabs.tabs.items[tabs.current.?];
+            try tab.loadLRCFromPath(io, arg);
+        }
+    }
+}
+
 pub fn main(init: std.process.Init) void {
     tabs = .init(init.gpa);
     defer tabs.deinit();
@@ -142,6 +157,11 @@ pub fn main(init: std.process.Init) void {
     rl.initWindow(1280, 720, "lyricedit");
     defer rl.closeWindow();
     rl.initAudioDevice();
+
+    const args = init.minimal.args.toSlice(init.arena.allocator()) catch &.{};
+    parse_args(init.io, args) catch |e| {
+        std.log.err("parse_args failed: {}", .{e});
+    };
 
     rl.setExitKey(.null);
 

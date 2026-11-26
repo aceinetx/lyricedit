@@ -222,4 +222,9 @@ pub fn build(b: *std.Build) void {
     run_cmd.step.dependOn(b.getInstallStep());
 
     run_cmd.addPassthruArgs();
+
+    // ----------------------------------------------------------
+
+    const check_step = b.step("check", "Check");
+    check_step.dependOn(&exe.step);
 }
